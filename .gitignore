@@ -1,0 +1,26 @@
+# Secrets
+.env
+.env.test
+ 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+dist/
+*.egg-info/
+*.log
+ 
+# Alembic
+alembic/versions/*.pyc
+ 
+# IDE
+.vscode/
+.idea/
+
+# Temp files in project
+temp_*
