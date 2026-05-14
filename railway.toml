@@ -1,0 +1,8 @@
+[build]
+builder = "RAILPACK"
+
+[deploy]
+startCommand = "uv run fastapi run --port $PORT"
+healthcheckPath = "/v1/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
