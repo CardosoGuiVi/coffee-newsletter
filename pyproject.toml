@@ -1,0 +1,22 @@
+[project]
+name = "coffee-newsletter"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=0.100.0",
+    "boto3>=1.43.6",
+    "email-validator>=2.3.0",
+    "fastapi[standard]>=0.136.1",
+    "feedparser>=6.0.12",
+    "httpx>=0.28.1",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.1",
+    "resend>=2.30.0",
+    "sendgrid>=6.12.5",
+    "uvicorn>=0.46.0",
+]
+
+[tool.fastapi]
+entrypoint = "web.main:app"
