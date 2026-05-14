@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>☕ Café & Novidades — Newsletter</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Georgia, serif;
+      background: linear-gradient(135deg, #faf8f3 0%, #f5ede3 100%);
+      color: #2c1a0e;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #6f3f1e 0%, #8b5a2b 100%);
+      padding: 3rem 2rem;
+      text-align: center;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: normal;
+      letter-spacing: 0.05em;
+    }
+
+    .header p {
+      font-size: 1rem;
+      opacity: 0.95;
+      font-style: italic;
+    }
+
+    .content {
+      padding: 3rem 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 2rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      color: #6b4f3a;
+      margin-bottom: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    input[type="email"] {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border: 2px solid #e0d5c8;
+      border-radius: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    input[type="email"]:focus {
+      outline: none;
+      border-color: #c87941;
+      box-shadow: 0 0 0 3px rgba(200, 121, 65, 0.1);
+    }
+
+    button {
+      width: 100%;
+      padding: 0.95rem 1.5rem;
+      background: linear-gradient(135deg, #c87941 0%, #b8652a 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 0.02em;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(200, 121, 65, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .message {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .message.success {
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #dcfce7;
+      display: block;
+    }
+
+    .message.error {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fee2e2;
+      display: block;
+    }
+
+    .stats {
+      text-align: center;
+      padding: 2rem;
+      background: #fff9f2;
+      border-top: 1px solid #e0d5c8;
+    }
+
+    .stats-label {
+      font-size: 0.8rem;
+      color: #9c6644;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+
+    .stats-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #6f3f1e;
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    .stats-detail {
+      font-size: 0.85rem;
+      color: #9c6644;
+      margin-bottom: 0.25rem;
+    }
+
+    .loading {
+      opacity: 0.6;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        border-radius: 0;
+      }
+
+      .header {
+        padding: 2rem 1.5rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .content {
+        padding: 2rem 1.5rem;
+      }
+
+      .stats {
+        padding: 1.5rem;
+      }
+
+      .stats-number {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>☕ Café & Novidades</h1>
+      <p>Curadoria semanal sobre café especializado</p>
+    </div>
+
+    <div class="content">
+      <div id="message" class="message"></div>
+
+      <form id="subscribeForm">
+        <div class="form-group">
+          <label for="email">Seu email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="seu@email.com"
+            required
+            aria-label="Email para inscrição"
+          />
+        </div>
+
+        <button type="submit" id="submitBtn">
+          Receber a newsletter
+        </button>
+      </form>
+
+      <p style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: #9c6644;">
+        Junte-se a uma comunidade de apaixonados por café. Sem spam, apenas as melhores histórias.
+      </p>
+    </div>
+
+    <div class="stats">
+      <div class="stats-label">Pessoas recebendo a newsletter</div>
+      <div class="stats-number" id="totalSubscribers">-</div>
+      <div class="stats-detail">Essa semana: <span id="weekSubscribers">0</span> novas inscrições</div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('subscribeForm');
+    const emailInput = document.getElementById('email');
+    const submitBtn = document.getElementById('submitBtn');
+    const messageEl = document.getElementById('message');
+    const totalEl = document.getElementById('totalSubscribers');
+    const weekEl = document.getElementById('weekSubscribers');
+
+    // Carrega estatísticas ao iniciar
+    loadStats();
+    // Recarrega a cada 30 segundos
+    setInterval(loadStats, 30000);
+
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/stats');
+        if (res.ok) {
+          const data = await res.json();
+          totalEl.textContent = data.total_subscribers;
+          weekEl.textContent = data.joined_this_week;
+        }
+      } catch (error) {
+        console.error('Erro ao carregar estatísticas:', error);
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = emailInput.value.trim();
+      if (!email) return;
+
+      submitBtn.disabled = true;
+      submitBtn.classList.add('loading');
+      messageEl.className = 'message';
+
+      try {
+        const response = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          messageEl.className = 'message success';
+          messageEl.textContent = '✅ ' + data.message;
+          form.reset();
+          loadStats(); // Recarrega stats imediatamente
+          setTimeout(() => {
+            messageEl.className = 'message';
+          }, 5000);
+        } else {
+          messageEl.className = 'message error';
+          messageEl.textContent = '❌ ' + data.detail;
+        }
+      } catch (error) {
+        messageEl.className = 'message error';
+        messageEl.textContent = '❌ Erro ao conectar. Tente novamente.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('loading');
+      }
+    });
+  </script>
+</body>
+</html>
