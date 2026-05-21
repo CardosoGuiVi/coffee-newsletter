@@ -1,0 +1,32 @@
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from pathlib import Path
+
+from app.api.v1 import health, newsletter
+from app.core.config import settings
+
+
+BASE_DIR = Path(__file__).parent
+STATIC_DIR = BASE_DIR /"static"
+
+
+app = FastAPI(title="Coffee Newsletter")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"] if settings.DEBUG else ["https://seudominio.com"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(health.router, prefix="/v1")
+app.include_router(newsletter.router, prefix="/v1")
+
+
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+@app.get("/")
+def main():
+    return FileResponse(STATIC_DIR / "index.html")
