@@ -2,6 +2,7 @@
 builder = "RAILPACK"
 
 [deploy]
+preDeployCommand = "alembic upgrade head"
 startCommand = "uv run fastapi run --port $PORT"
 healthcheckPath = "/v1/health"
 healthcheckTimeout = 30
