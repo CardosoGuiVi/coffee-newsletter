@@ -1,0 +1,15 @@
+services:
+  database:
+    container_name: "coffee-dev"
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${COFFEE_DATABASE__USER}
+      POSTGRES_PASSWORD: ${COFFEE_DATABASE__PASSWORD}
+      POSTGRES_DB: ${COFFEE_DATABASE__DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
