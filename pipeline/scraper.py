@@ -3,7 +3,7 @@ import feedparser # type: ignore
 from datetime import datetime, timedelta, UTC
 
 from pipeline.schemas.scraper import Article
-from app.core.config import settings
+from app.core.config import settings, RSS_FEEDS
 
 
 
@@ -38,9 +38,9 @@ async def fetch_all_feeds() -> list[Article]:
     loop = asyncio.get_event_loop()
     tasks = [
         loop.run_in_executor(None, parse_feed, name, url)
-        for name, url in settings.RSS_FEEDS.items()
+        for name, url in RSS_FEEDS.items()
     ]
     results = await asyncio.gather(*tasks)
     all_articles = [a for feed in results for a in feed if a.url]
-    print(f"Fontes consultadas: {len(settings.RSS_FEEDS)}")
+    print(f"Fontes consultadas: {len(RSS_FEEDS)}")
     return all_articles

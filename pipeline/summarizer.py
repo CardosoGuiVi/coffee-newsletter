@@ -1,7 +1,7 @@
 import json
 import anthropic
 
-from app.core.config import settings
+from app.core.config import settings, PROMPT
 from pipeline.scraper import Article
 from pipeline.schemas.summarizer import Newsletter
 
@@ -19,7 +19,7 @@ async def generate_newsletter(articles: list[Article]) -> Newsletter:
         max_tokens=settings.CLAUDE_MAX_TOKENS,
         messages=[{
             "role": "user",
-            "content": settings.PROMPT.format(articles_text=articles_text)
+            "content": PROMPT.format(articles_text=articles_text)
         }]
     )
 

@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-RSS_FEEDS = {
+RSS_FEEDS: dict[str, str] = {
     # "CaféPoint": "https://www.cafepoint.com.br/",# Criar um scraper para esse
     "Revista Espresso": "https://revistaespresso.com.br/feed/",
     "CeCafé": "https://www.cecafe.com.br/feed/",
@@ -19,7 +19,7 @@ RSS_FEEDS = {
     "Coffee Chronicler": "https://coffeechronicler.com/feed/",
 }
 
-PROMPT = """Você é o editor de uma newsletter semanal chamada "Café & Novidades".
+PROMPT: str = """Você é o editor de uma newsletter semanal chamada "Café & Novidades".
 Seu público são entusiastas de café especial brasileiros — curiosos, cultos, apaixonados pela bebida.
 
 Abaixo estão artigos coletados de sites especializados em café nesta semana.
@@ -49,7 +49,7 @@ Formato exato:
 Artigos desta semana:
 {articles_text}"""
 
-HTML = """<!DOCTYPE html>
+HTML:str = """<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -201,8 +201,6 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
 
     # Pipeline
-    RSS_FEEDS: dict[str, str] = RSS_FEEDS
-    PROMPT: str = PROMPT
     CLAUDE_MODEL: str = "claude-haiku-4-5-20251001"
     CLAUDE_MAX_TOKENS: int = 2000
     DAYS_BACK: int = 7
