@@ -3,7 +3,8 @@ import feedparser # type: ignore
 from datetime import datetime, timedelta, UTC
 
 from pipeline.schemas.scraper import Article
-from app.core.config import settings, RSS_FEEDS
+from app.core.config import settings
+from app.core.consts import RSS_FEEDS
 
 
 

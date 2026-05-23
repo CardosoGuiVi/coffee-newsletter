@@ -1,7 +1,8 @@
 import json
 import anthropic
 
-from app.core.config import settings, PROMPT
+from app.core.config import settings
+from app.core.consts import PROMPT, PromptTemplate
 from pipeline.scraper import Article
 from pipeline.schemas.summarizer import Newsletter
 
@@ -14,12 +15,13 @@ async def generate_newsletter(articles: list[Article]) -> Newsletter:
         for i, a in enumerate(articles[:50])
     ])
 
+    content = PROMPT.format_map(vars(PromptTemplate(articles_text=articles_text)))
     message = client.messages.create(
         model=settings.CLAUDE_MODEL,
         max_tokens=settings.CLAUDE_MAX_TOKENS,
         messages=[{
             "role": "user",
-            "content": PROMPT.format(articles_text=articles_text)
+            "content": content
         }]
     )
 
