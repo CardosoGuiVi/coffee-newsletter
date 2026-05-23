@@ -1,0 +1,118 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Café & Novidades — {{ week_label }}</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #faf8f3;
+    }
+
+    img {
+      border: 0;
+      display: block;
+    }
+  </style>
+</head>
+
+<body style="margin:0;padding:0;background:#faf8f3;">
+
+  <!-- Wrapper -->
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#faf8f3;">
+    <tr>
+      <td align="center" style="padding:2rem 1rem;">
+
+        <!-- Container -->
+        <table width="620" cellpadding="0" cellspacing="0" border="0" style="max-width:620px;">
+
+          <!-- Header -->
+          <tr>
+            <td align="center" style="border-bottom:2px solid #6f3f1e;padding-bottom:1.5rem;margin-bottom:2rem;">
+              <h1 style="font-family:Georgia,serif;font-size:2rem;color:#6f3f1e;letter-spacing:0.05em;margin:0;">
+                ☕ Café & Novidades
+              </h1>
+              <p style="font-family:Georgia,serif;color:#9c6644;font-size:0.9rem;margin-top:0.25rem;">
+                {{ week_label }}
+              </p>
+            </td>
+          </tr>
+
+          <!-- Intro -->
+          <tr>
+            <td style="padding-top:2rem;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td width="4" style="background:#c87941;">&nbsp;</td>
+                  <td style="background:#fff9f2;padding:1rem 1.25rem;font-family:Georgia,serif;
+                             font-size:1rem;line-height:1.7;color:#2c1a0e;">
+                    {{ intro }}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Items -->
+          <tr>
+            <td style="padding-top:2.5rem;">
+              {% for item in items %}
+                {% with title=item.title, summary=item.summary, source=item.source, url=item.url %}
+                  {% include "newsletter_item.html" %}
+                {% endwith %}
+              {% endfor %}
+            </td>
+          </tr>
+
+          <!-- Closing -->
+          <tr>
+            <td align="center" style="border-top:1px solid #e0d5c8;padding-top:1.5rem;margin-top:2.5rem;
+                                      font-family:Georgia,serif;color:#6b4f3a;font-style:italic;
+                                      line-height:1.7;">
+              {{ closing }}
+            </td>
+          </tr>
+
+          <!-- Botões -->
+          <tr>
+            <td align="center" style="padding-top:2rem;">
+              <table cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding-left:0.5rem;">
+                    <a href="{{ refer_url }}" style="background:#fff;color:#6f3f1e;padding:0.75rem 1.5rem;
+                              border-radius:6px;text-decoration:none;
+                              font-family:sans-serif;font-size:0.9rem;display:inline-block;
+                              border:1px solid #6f3f1e;">
+                      Indicar para um amigo ☕
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top:2rem;font-family:sans-serif;font-size:0.75rem;color:#b0967e;">
+              <p style="margin:0;">Todos os artigos pertencem aos seus respectivos autores e publicações.</p>
+              <p style="margin:0.5rem 0 0;">Esta newsletter faz curadoria e resume conteúdo público,
+                sempre com link para a fonte original.</p>
+              <p style="margin:1rem 0 0;">
+                Não quer mais receber esses emails?
+                <a href="{{ unsubscribe_url }}" style="color:#6f3f1e;">Clique aqui para se descadastrar</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+
+</html>
