@@ -19,7 +19,13 @@ dependencies = [
     "alembic>=1.18.4",
     "asyncpg>=0.31.0",
     "greenlet>=3.5.1",
+    "jinja2>=3.1.6",
 ]
 
 [tool.fastapi]
 entrypoint = "app.main:app"
+
+[dependency-groups]
+dev = [
+    "ipython>=9.13.0",
+]
