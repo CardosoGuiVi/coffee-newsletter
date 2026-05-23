@@ -1,0 +1,31 @@
+name: Coffee Newsletter — Envio Semanal
+
+on:
+  schedule:
+    - cron: "0 11 * * 1"
+  workflow_dispatch:
+
+jobs:
+  send-newsletter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configura Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instala uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Instala dependências
+        run: uv sync
+
+      - name: Roda o pipeline
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.COFFEE_ANTHROPIC_API_KEY }}
+          RESEND_API_KEY: ${{ secrets.COFFEE_RESEND_API_KEY }}
+          FROM_EMAIL: ${{ secrets.COFFEE_FROM_EMAIL }}
+        run: uv run python run_pipeline.py
