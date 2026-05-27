@@ -1,253 +1,531 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>☕ Café & Novidades — Newsletter</title>
+  <meta name="description"
+    content="Coado — curadoria semanal sobre o mundo dos cafés. Notícias, cultura, preparo e mercado direto na sua caixa de entrada.">
+  <title>Coado — Newsletter sobre Cafés</title>
+  <link rel="icon" href="/static/images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=Inter:wght@400;500&display=swap"
+    rel="stylesheet">
   <style>
-    * {
+    :root {
+      --cream-50: #F7F3ED;
+      --cream-100: #EFE9E1;
+      --cream-200: #E9E2D6;
+      --cream-300: #D4C6AE;
+      --coffee-300: #C87941;
+      --coffee-500: #8B5E3C;
+      --coffee-700: #6F3F1E;
+      --coffee-900: #2B1F17;
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
     body {
-      font-family: Georgia, serif;
-      background: linear-gradient(135deg, #faf8f3 0%, #f5ede3 100%);
-      color: #2c1a0e;
+      font-family: var(--font-body);
+      background-color: var(--cream-50);
+      color: var(--coffee-900);
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Grain texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 160px;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto auto;
+    }
+
+    /* ── Header ─────────────────────────────── */
+    .site-header {
+      padding: 2rem 2rem 0;
       display: flex;
+      justify-content: center;
+    }
+
+    .logo-link {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .logo-link:hover {
+      opacity: 0.7;
+    }
+
+    .logo-svg {
+      height: 50px;
+      width: auto;
+      display: block;
+    }
+
+    /* ── Hero ───────────────────────────────── */
+    .hero {
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 2rem 1rem;
-    }
-
-    .container {
-      max-width: 500px;
-      width: 100%;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-    }
-
-    .header {
-      background: linear-gradient(135deg, #6f3f1e 0%, #8b5a2b 100%);
-      padding: 3rem 2rem;
+      padding: 5rem 1.5rem 4rem;
       text-align: center;
-      color: white;
     }
 
-    .header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-      font-weight: normal;
-      letter-spacing: 0.05em;
+    .hero-rule {
+      width: 1px;
+      height: 52px;
+      background: linear-gradient(to bottom, transparent, var(--coffee-300));
+      margin-bottom: 2.5rem;
+      animation: fadeDown 0.9s var(--ease-out) both;
     }
 
-    .header p {
-      font-size: 1rem;
-      opacity: 0.95;
-      font-style: italic;
-    }
-
-    .content {
-      padding: 3rem 2rem;
-    }
-
-    .form-group {
-      margin-bottom: 2rem;
-    }
-
-    label {
-      display: block;
-      font-size: 0.9rem;
-      color: #6b4f3a;
-      margin-bottom: 0.75rem;
+    .hero-label {
+      font-family: var(--font-body);
+      font-size: 0.68rem;
       font-weight: 500;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-    }
-
-    input[type="email"] {
-      width: 100%;
-      padding: 0.85rem 1rem;
-      border: 2px solid #e0d5c8;
-      border-radius: 8px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: 0.95rem;
-      transition: all 0.3s ease;
-    }
-
-    input[type="email"]:focus {
-      outline: none;
-      border-color: #c87941;
-      box-shadow: 0 0 0 3px rgba(200, 121, 65, 0.1);
-    }
-
-    button {
-      width: 100%;
-      padding: 0.95rem 1.5rem;
-      background: linear-gradient(135deg, #c87941 0%, #b8652a 100%);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      letter-spacing: 0.02em;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(200, 121, 65, 0.3);
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .message {
-      padding: 1rem;
-      border-radius: 8px;
+      color: var(--coffee-500);
       margin-bottom: 1.5rem;
-      font-size: 0.9rem;
+      animation: fadeUp 0.7s var(--ease-out) 0.1s both;
+    }
+
+    .hero-headline {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(2.75rem, 8vw, 5.25rem);
+      line-height: 1.04;
+      letter-spacing: -0.035em;
+      color: var(--coffee-900);
+      max-width: 13ch;
+      margin-bottom: 1.75rem;
+      animation: fadeUp 0.7s var(--ease-out) 0.2s both;
+    }
+
+    .hero-headline em {
+      font-style: italic;
+      color: var(--coffee-700);
+    }
+
+    .hero-sub {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--coffee-500);
+      max-width: 34ch;
+      margin-bottom: 3rem;
+      animation: fadeUp 0.7s var(--ease-out) 0.3s both;
+    }
+
+    /* ── Form ───────────────────────────────── */
+    .subscribe-form {
+      width: 100%;
+      max-width: 420px;
+      animation: fadeUp 0.7s var(--ease-out) 0.4s both;
+    }
+
+    .form-message {
       display: none;
+      margin-bottom: 0.875rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      text-align: left;
     }
 
-    .message.success {
+    .form-message.success {
+      display: block;
       background: #f0fdf4;
-      color: #15803d;
-      border: 1px solid #dcfce7;
-      display: block;
+      color: #166534;
+      border: 1px solid #bbf7d0;
     }
 
-    .message.error {
+    .form-message.error {
+      display: block;
       background: #fef2f2;
-      color: #b91c1c;
-      border: 1px solid #fee2e2;
-      display: block;
+      color: #991b1b;
+      border: 1px solid #fecaca;
     }
 
-    .stats {
-      text-align: center;
-      padding: 2rem;
-      background: #fff9f2;
-      border-top: 1px solid #e0d5c8;
+    .form-row {
+      display: flex;
+      border: 1.5px solid var(--cream-300);
+      border-radius: 10px;
+      background: #fff;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    .stats-label {
-      font-size: 0.8rem;
-      color: #9c6644;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 0.5rem;
+    .form-row:focus-within {
+      border-color: var(--coffee-700);
+      box-shadow: 0 0 0 3px rgba(111, 63, 30, 0.09);
     }
 
-    .stats-number {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #6f3f1e;
-      line-height: 1;
-      margin-bottom: 1rem;
+    .form-input {
+      flex: 1;
+      min-width: 0;
+      padding: 0.875rem 1rem;
+      border: none;
+      background: transparent;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--coffee-900);
+      outline: none;
     }
 
-    .stats-detail {
+    .form-input::placeholder {
+      color: var(--cream-300);
+    }
+
+    .form-btn {
+      padding: 0.875rem 1.3rem;
+      background: var(--coffee-700);
+      color: var(--cream-50);
+      border: none;
+      font-family: var(--font-body);
       font-size: 0.85rem;
-      color: #9c6644;
-      margin-bottom: 0.25rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background 0.2s;
     }
 
-    .loading {
-      opacity: 0.6;
+    .form-btn:hover:not(:disabled) {
+      background: var(--coffee-900);
     }
 
-    @media (max-width: 500px) {
-      .container {
-        border-radius: 0;
+    .form-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .form-note {
+      margin-top: 0.85rem;
+      font-size: 0.76rem;
+      color: var(--coffee-500);
+      opacity: 0.75;
+      letter-spacing: 0.01em;
+    }
+
+    /* ── Pills ──────────────────────────────── */
+    .categories {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 3.5rem;
+      animation: fadeUp 0.7s var(--ease-out) 0.55s both;
+    }
+
+    .pill {
+      padding: 0.3rem 0.8rem;
+      border: 1px solid var(--cream-300);
+      border-radius: 999px;
+      font-size: 0.72rem;
+      letter-spacing: 0.09em;
+      color: var(--coffee-500);
+    }
+
+    /* ── Stats ──────────────────────────────── */
+    .divider {
+      max-width: 560px;
+      margin: 0 auto;
+      width: calc(100% - 3rem);
+      height: 1px;
+      background: var(--cream-200);
+    }
+
+    .stats-section {
+      padding: 2.25rem 1.5rem;
+      text-align: center;
+      animation: fadeUp 0.7s var(--ease-out) 0.65s both;
+    }
+
+    .stats-inner {
+      display: inline-flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .stat-item {
+      line-height: 1.25;
+    }
+
+    .stat-number {
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-size: 2.25rem;
+      letter-spacing: -0.04em;
+      color: var(--coffee-900);
+      display: block;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-label {
+      font-size: 0.69rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--coffee-500);
+    }
+
+    .stat-sep {
+      width: 1px;
+      height: 30px;
+      background: var(--cream-200);
+    }
+
+    /* ── Footer ─────────────────────────────── */
+    .site-footer {
+      padding: 1.25rem 2rem;
+      text-align: center;
+      border-top: 1px solid var(--cream-200);
+    }
+
+    .footer-text {
+      font-size: 0.73rem;
+      color: var(--cream-300);
+      letter-spacing: 0.04em;
+    }
+
+    .footer-text a {
+      color: var(--coffee-500);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-text a:hover {
+      color: var(--coffee-700);
+    }
+
+    /* ── Decorative drops ───────────────────── */
+    .deco {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.04;
+    }
+
+    .deco-1 {
+      top: -80px;
+      right: -60px;
+      width: 300px;
+    }
+
+    .deco-2 {
+      bottom: -60px;
+      left: -70px;
+      width: 240px;
+      transform: rotate(18deg);
+    }
+
+    /* ── Animations ─────────────────────────── */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
       }
 
-      .header {
-        padding: 2rem 1.5rem;
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
       }
 
-      .header h1 {
-        font-size: 2rem;
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── Mobile ─────────────────────────────── */
+    @media (max-width: 480px) {
+      .site-header {
+        padding: 1.5rem 1.5rem 0;
       }
 
-      .content {
-        padding: 2rem 1.5rem;
+      .hero {
+        padding: 3.5rem 1.25rem 3rem;
       }
 
-      .stats {
-        padding: 1.5rem;
+      .hero-rule {
+        height: 36px;
+        margin-bottom: 2rem;
       }
 
-      .stats-number {
-        font-size: 2rem;
+      .form-row {
+        flex-direction: column;
+        border-radius: 10px;
+      }
+
+      .form-input {
+        border-bottom: 1px solid var(--cream-200);
+        padding: 0.9rem 1rem;
+        text-align: center;
+      }
+
+      .form-btn {
+        padding: 0.9rem 1rem;
+        text-align: center;
+        font-size: 0.9rem;
+      }
+
+      .stats-inner {
+        gap: 1.5rem;
+      }
+
+      .stat-number {
+        font-size: 1.875rem;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .hero-headline {
+        font-size: 2.4rem;
       }
     }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>☕ Café & Novidades</h1>
-      <p>Curadoria semanal sobre café especializado</p>
-    </div>
 
-    <div class="content">
-      <div id="message" class="message"></div>
+  <!-- Gotas decorativas -->
+  <svg class="deco deco-1" viewBox="0 0 300 390" fill="none" aria-hidden="true">
+    <path d="M150 8Q18 110 18 225Q18 370 150 385Q282 370 282 225Q282 110 150 8Z" fill="#6F3F1E" />
+  </svg>
+  <svg class="deco deco-2" viewBox="0 0 240 314" fill="none" aria-hidden="true">
+    <path d="M120 6Q14 90 14 182Q14 298 120 310Q226 298 226 182Q226 90 120 6Z" fill="#6F3F1E" />
+  </svg>
 
-      <form id="subscribeForm">
-        <div class="form-group">
-          <label for="email">Seu email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="seu@email.com"
-            required
-            aria-label="Email para inscrição"
-          />
+  <div class="page">
+
+    <header class="site-header">
+      <a href="/" class="logo-link" aria-label="Coado — página inicial">
+        <img src="/static/images/logo-dark.svg" alt="Coado" class="logo-svg" />
+      </a>
+    </header>
+    <!-- <header class="site-header">
+      <a href="/" class="logo-link" aria-label="Coado — página inicial">
+        <svg class="logo-svg" viewBox="0 0 268 56" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <text
+            font-family="'Fraunces', Georgia, serif"
+            font-weight="600"
+            font-size="50"
+            letter-spacing="-1.5"
+            fill="#2B1F17"
+            x="0" y="46">coado</text>
+          <path d="M202 48Q202 56 207 59Q212 56 212 48Q212 39 207 31Q202 39 202 48Z" fill="#6F3F1E"/>
+        </svg>
+      </a>
+    </header> -->
+
+    <main class="hero" id="main">
+      <!-- <div class="hero-rule" aria-hidden="true"></div> -->
+
+      <p class="hero-label">Toda segunda-feira</p>
+
+      <h1 class="hero-headline">
+        O melhor do café,<br><em>filtrado</em> pra você
+      </h1>
+
+      <p class="hero-sub">
+        Notícias, cultura, preparo e mercado.<br>
+        Curadoria semanal na sua caixa de entrada.
+      </p>
+
+      <form class="subscribe-form" id="subscribeForm" novalidate>
+        <div id="formMessage" class="form-message" role="alert" aria-live="polite"></div>
+        <div class="form-row">
+          <input class="form-input" type="email" id="email" name="email" placeholder="seu@email.com"
+            autocomplete="email" required aria-label="Seu endereço de e-mail">
+          <button class="form-btn" type="submit" id="submitBtn">
+            Assinar grátis
+          </button>
         </div>
-
-        <button type="submit" id="submitBtn">
-          Receber a newsletter
-        </button>
+        <p class="form-note">Sem spam. Cancele quando quiser.</p>
       </form>
 
-      <p style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: #9c6644;">
-        Junte-se a uma comunidade de apaixonados por café. Sem spam, apenas as melhores histórias.
-      </p>
-    </div>
+      <!-- <nav class="categories" aria-label="Seções da newsletter">
+        <span class="pill">Notícias</span>
+        <span class="pill">Cultura</span>
+        <span class="pill">Preparo</span>
+        <span class="pill">Mercado</span>
+      </nav> -->
+    </main>
 
-    <div class="stats">
-      <div class="stats-label">Pessoas recebendo a newsletter</div>
-      <div class="stats-number" id="totalSubscribers">-</div>
-      <div class="stats-detail">Essa semana: <span id="weekSubscribers">0</span> novas inscrições</div>
-    </div>
+    <div class="divider" role="separator"></div>
+
+    <section class="stats-section" aria-label="Estatísticas da newsletter">
+      <div class="stats-inner">
+        <div class="stat-item">
+          <span class="stat-number" id="totalSubscribers">—</span>
+          <span class="stat-label">leitores</span>
+        </div>
+        <div class="stat-sep" aria-hidden="true"></div>
+        <div class="stat-item">
+          <span class="stat-number" id="weekSubscribers">—</span>
+          <span class="stat-label">essa semana</span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p class="footer-text">
+        &copy; 2026 Coado &mdash;
+        <a href="/unsubscribe">Cancelar inscrição</a>
+      </p>
+    </footer>
+
   </div>
 
   <script>
     const form = document.getElementById('subscribeForm');
     const emailInput = document.getElementById('email');
     const submitBtn = document.getElementById('submitBtn');
-    const messageEl = document.getElementById('message');
+    const messageEl = document.getElementById('formMessage');
     const totalEl = document.getElementById('totalSubscribers');
     const weekEl = document.getElementById('weekSubscribers');
 
-    // Carrega estatísticas ao iniciar
     loadStats();
-    // Recarrega a cada 30 segundos
     setInterval(loadStats, 30000);
 
     async function loadStats() {
@@ -255,53 +533,66 @@
         const res = await fetch('/v1/stats');
         if (res.ok) {
           const data = await res.json();
-          totalEl.textContent = data.total_subscribers;
-          weekEl.textContent = data.joined_this_week;
+          animateCount(totalEl, data.total_subscribers);
+          animateCount(weekEl, data.joined_this_week);
         }
-      } catch (error) {
-        console.error('Erro ao carregar estatísticas:', error);
+      } catch (e) {
+        console.error('Erro ao carregar estatísticas:', e);
       }
+    }
+
+    function animateCount(el, target) {
+      const current = parseInt(el.textContent.replace(/\D/g, '')) || 0;
+      if (current === target) { el.textContent = target.toLocaleString('pt-BR'); return; }
+      const step = Math.max(1, Math.ceil(Math.abs(target - current) / 24));
+      const dir = target > current ? 1 : -1;
+      let val = current;
+      const tick = setInterval(() => {
+        val += dir * step;
+        if ((dir > 0 && val >= target) || (dir < 0 && val <= target)) {
+          val = target; clearInterval(tick);
+        }
+        el.textContent = val.toLocaleString('pt-BR');
+      }, 28);
     }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const email = emailInput.value.trim();
       if (!email) return;
 
       submitBtn.disabled = true;
-      submitBtn.classList.add('loading');
-      messageEl.className = 'message';
+      submitBtn.textContent = 'Enviando…';
+      messageEl.className = 'form-message';
+      messageEl.textContent = '';
 
       try {
-        const response = await fetch('/v1/subscribe', {
+        const res = await fetch('/v1/subscribe', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email }),
         });
+        const data = await res.json();
 
-        const data = await response.json();
-
-        if (response.ok) {
-          messageEl.className = 'message success';
-          messageEl.textContent = '✅ ' + data.message;
+        if (res.ok) {
+          messageEl.className = 'form-message success';
+          messageEl.textContent = data.message;
           form.reset();
-          loadStats(); // Recarrega stats imediatamente
-          setTimeout(() => {
-            messageEl.className = 'message';
-          }, 5000);
+          loadStats();
+          setTimeout(() => { messageEl.className = 'form-message'; messageEl.textContent = ''; }, 6000);
         } else {
-          messageEl.className = 'message error';
-          messageEl.textContent = '❌ ' + data.detail;
+          messageEl.className = 'form-message error';
+          messageEl.textContent = data.detail;
         }
-      } catch (error) {
-        messageEl.className = 'message error';
-        messageEl.textContent = '❌ Erro ao conectar. Tente novamente.';
+      } catch {
+        messageEl.className = 'form-message error';
+        messageEl.textContent = 'Erro ao conectar. Tente novamente.';
       } finally {
         submitBtn.disabled = false;
-        submitBtn.classList.remove('loading');
+        submitBtn.textContent = 'Assinar grátis';
       }
     });
   </script>
 </body>
+
 </html>
