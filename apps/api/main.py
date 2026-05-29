@@ -10,6 +10,7 @@ from packages.core.config import settings
 
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR.parent / "web"
+IMAGES_DIR = STATIC_DIR / "images"
 
 
 app = FastAPI(title="Coffee Newsletter")
@@ -26,6 +27,7 @@ app.include_router(newsletter.router, prefix="/v1")
 
 
 app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="web")
+app.mount("/images", StaticFiles(directory=str(IMAGES_DIR)), name="images")
 
 @app.get("/")
 def main():
