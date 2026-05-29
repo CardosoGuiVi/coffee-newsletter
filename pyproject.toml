@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [tool.fastapi]
-entrypoint = "app.main:app"
+entrypoint = "apps.api.main:app"
 
 [dependency-groups]
 dev = [

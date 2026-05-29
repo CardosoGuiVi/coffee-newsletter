@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Coado — curadoria semanal sobre o mundo dos cafés. Notícias, cultura, preparo e mercado direto na sua caixa de entrada.">
+  <title>Coado — Newsletter sobre Cafés</title>
+
+  <link rel="icon" href="/favicon/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+  <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=Inter:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/styles/index.css">
+</head>
+
+<body>
+
+  <!-- Gotas decorativas -->
+  <svg class="deco deco-1" viewBox="0 0 300 390" fill="none" aria-hidden="true">
+    <path d="M150 8Q18 110 18 225Q18 370 150 385Q282 370 282 225Q282 110 150 8Z" fill="#6F3F1E" />
+  </svg>
+  <svg class="deco deco-2" viewBox="0 0 240 314" fill="none" aria-hidden="true">
+    <path d="M120 6Q14 90 14 182Q14 298 120 310Q226 298 226 182Q226 90 120 6Z" fill="#6F3F1E" />
+  </svg>
+
+  <div class="page">
+
+    <header class="site-header">
+      <a href="/" class="logo-link" aria-label="Coado — página inicial">
+        <img src="/images/logo-dark.svg" alt="Coado" class="logo-svg" />
+      </a>
+    </header>
+
+    <main class="hero" id="main">
+
+      <p class="hero-label">Toda segunda-feira</p>
+
+      <h1 class="hero-headline">
+        O melhor do café,<br><em>filtrado</em> pra você
+      </h1>
+
+      <p class="hero-sub">
+        Notícias, cultura, preparo e mercado.<br>
+        Curadoria semanal na sua caixa de entrada.
+      </p>
+
+      <form class="subscribe-form" id="subscribeForm" novalidate>
+        <div id="formMessage" class="form-message" role="alert" aria-live="polite"></div>
+        <div class="form-row">
+          <input class="form-input" type="email" id="email" name="email" placeholder="seu@email.com"
+            autocomplete="email" required aria-label="Seu endereço de e-mail">
+          <button class="form-btn" type="submit" id="submitBtn">
+            Assinar grátis
+          </button>
+        </div>
+        <p class="form-note">Sem spam. Cancele quando quiser.</p>
+      </form>
+    </main>
+
+    <div class="divider" role="separator"></div>
+
+    <section class="stats-section" aria-label="Estatísticas da newsletter">
+      <div class="stats-inner">
+        <div class="stat-item">
+          <span class="stat-number" id="totalSubscribers">—</span>
+          <span class="stat-label">leitores</span>
+        </div>
+        <div class="stat-sep" aria-hidden="true"></div>
+        <div class="stat-item">
+          <span class="stat-number" id="weekSubscribers">—</span>
+          <span class="stat-label">essa semana</span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p class="footer-text">
+        &copy; 2026 Coado
+      </p>
+    </footer>
+
+  </div>
+
+  <script src="/js/index.js"></script>
+</body>
+
+</html>

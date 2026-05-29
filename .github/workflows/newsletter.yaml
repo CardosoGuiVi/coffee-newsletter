@@ -36,4 +36,4 @@ jobs:
           COFFEE_ANTHROPIC_API_KEY: ${{ secrets.COFFEE_ANTHROPIC_API_KEY }}
           COFFEE_RESEND_API_KEY: ${{ secrets.COFFEE_RESEND_API_KEY }}
           COFFEE_FROM_EMAIL: ${{ secrets.COFFEE_FROM_EMAIL }}
-        run: uv run python run_pipeline.py
+        run: uv run python -m apps.newsletter_pipeline.main

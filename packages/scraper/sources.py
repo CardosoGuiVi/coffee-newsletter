@@ -1,0 +1,15 @@
+RSS_FEEDS: dict[str, str] = {
+    "Revista Espresso": "https://revistaespresso.com.br/feed/",
+    "CeCafé": "https://www.cecafe.com.br/feed/",
+    "Revista Cafeicultura": "https://www.revistacafeicultura.com.br/feed/",
+    "Blog do Café": "https://www.blogdocafe.com.br/feeds/posts/default?alt=rss",
+    "Coffee & Joy Blog": "https://blog.coffeeandjoy.com.br/feed/",
+    "r/CafeEspecialBR": "https://www.reddit.com/r/CafeEspecialBR.rss",
+    "Perfect Daily Grind": "https://perfectdailygrind.com/feed/",
+    "Daily Coffee News": "https://dailycoffeenews.com/feed/",
+    "Sprudge": "https://sprudge.com/feed/",
+    "Fresh Cup": "https://freshcup.com/feed/",
+    "SCA News": "https://sca.coffee/sca-news?format=rss",
+    "Barista Magazine": "https://www.baristamagazine.com/feed/",
+    "Coffee Chronicler": "https://coffeechronicler.com/feed/",
+}
