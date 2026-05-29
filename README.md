@@ -1,8 +1,12 @@
-# ☕ Coffee Newsletter
+<div align="center">
+  <img src="apps/web/images/logo-dark.svg" alt="Coffee Newsletter Logo" width="400"/>
+</div>
+
+# ☕ Coado — Newsletter about Coffees
 
 An automated weekly newsletter about specialty coffee. Collects news from global RSS feeds, summarizes with Claude API, and sends to your audience via email.
 
-**Status:** Live on Railway · Weekly automation via GitHub Actions · Phase 1 + 2 in progress
+**Status:** Live on Railway · Weekly automation via GitHub Actions
 
 🌐 **Live:** [coffee.guicardoso.dev.br](https://coffee.guicardoso.dev.br)
 
@@ -12,64 +16,82 @@ An automated weekly newsletter about specialty coffee. Collects news from global
 
 A fullstack project that combines:
 
-- **Phase 1:** Simple signup website (FastAPI → PostgreSQL)
-- **Phase 2:** Automation pipeline (RSS scraper → Claude API → Resend)
-- **Deployment:** Railway + GitHub Actions
+- **Signup website** — FastAPI → PostgreSQL subscription management
+- **Automation pipeline** — RSS scraper → Claude API → Resend email delivery
+- **Deployment** — Railway + Vercel + GitHub Actions
+
+---
 
 ## 🏗️ Architecture
+
+This project follows a **modular monolith** architecture using a monorepo-style structure.
 
 ```
 coffee-newsletter/
 │
-├── app/                          ← FastAPI web app
-│   ├── api/v1/                   ← REST endpoints
-│   ├── core/                     ← Configuration and database
-│   │   ├── config.py             ← Pydantic Settings
-│   │   ├── database.py           ← SQLAlchemy + asyncpg
-│   │   ├── dependencies.py       ← Dependency injection
-│   │   └── consts.py             ← Global constants
-│   ├── models/                   ← SQLAlchemy ORM
-│   │   └── newsletter.py         ← Subscriber model
-│   ├── schemas/                  ← Pydantic schemas
-│   │   └── newsletter.py         ← Request/response shapes
-│   ├── services/                 ← Business logic
-│   │   ├── subscriber.py         ← Subscriber CRUD
-│   │   └── newsletter.py         ← Newsletter service
-│   ├── static/                   ← Frontend assets
-│   │   ├── index.html
-│   │   ├── js/
-│   │   └── styles/
-│   └── main.py                   ← FastAPI entrypoint
+├── apps/
+│   ├── api/                          ← FastAPI web app (routes, schemas, dependencies)
+│   ├── web/                          ← Static frontend (HTML, CSS, JS, assets)
+│   │   └── images/
+│   │       └── logo-dark.svg
+│   └── newsletter_pipeline/          ← Pipeline entrypoint and orchestration
 │
-├── pipeline/                     ← Newsletter automation
-│   ├── main.py                   ← Orchestrator
-│   ├── scraper.py                ← RSS feeds
-│   ├── summarizer.py             ← Claude API
-│   ├── sender.py                 ← Resend API
-│   ├── renderer.py               ← HTML template engine
-│   └── schemas/
-│       ├── scraper.py
-│       └── summarizer.py
+├── packages/
+│   ├── ai/                           ← Claude API integration
+│   ├── core/                         ← Shared config (Pydantic Settings), constants
+│   ├── database/                     ← SQLAlchemy base, sessions, models, migrations
+│   ├── mailer/                       ← Mail provider abstractions (Resend, SES, etc.)
+│   ├── newsletter/                   ← Newsletter domain logic, schemas, templates
+│   │   └── templates/
+│   │       └── emails/
+│   │           ├── newsletter.html
+│   │           ├── newsletter_item.html
+│   │           └── welcome.html
+│   └── scraper/                      ← RSS feed collection and scraping logic
 │
-├── migrations/                   ← Alembic (database versioning)
+├── migrations/                       ← Alembic database versioning
 │   └── versions/
-│       └── f51f0d54897f_subscriber_model.py
 │
-├── templates/                    ← Jinja2 email templates
-│   ├── emails/
-│   │   ├── newsletter.html       ← Main newsletter
-│   │   ├── newsletter_item.html  ← Individual item
-│   │   └── welcome.html          ← Welcome email
-│   └── web/
-│
-├── pyproject.toml                ← Dependencies (uv)
-├── Makefile                      ← Useful commands
-├── compose.yaml                  ← Docker (PostgreSQL)
-├── railway.toml                  ← Deploy configuration
-├── alembic.ini                   ← Alembic config
-├── run_pipeline.py               ← Pipeline runner script
-└── README.md                     ← This file
+├── pyproject.toml                    ← Dependencies (uv)
+├── Makefile                          ← Useful commands
+├── compose.yaml                      ← Docker (PostgreSQL)
+├── railway.toml                      ← Deploy configuration
+└── alembic.ini                       ← Alembic config
 ```
+
+### Layer Responsibilities
+
+| Layer | Responsibility |
+|---|---|
+| `apps/` | Entrypoints only — wire dependencies, bootstrap services, expose routes |
+| `packages/newsletter` | Newsletter domain logic, campaign workflows, rendering, prompts |
+| `packages/database` | SQLAlchemy models, sessions, repositories, migrations |
+| `packages/mailer` | Mail provider abstractions and implementations |
+| `packages/ai` | AI provider integrations and LLM clients |
+| `packages/scraper` | RSS collection, source definitions, scraping logic |
+| `packages/core` | Shared configuration via Pydantic Settings |
+
+---
+
+## 🔄 Newsletter Pipeline
+
+### How it works
+
+```
+GitHub Actions (Monday, 8am UTC-3)
+  ↓
+apps/newsletter_pipeline/
+  ├── packages/scraper     → Collects RSS feeds (10+ coffee sources)
+  ├── packages/ai          → Claude API summarizes articles
+  ├── packages/newsletter  → Jinja2 renders email template
+  └── packages/mailer      → Resend sends to all subscribers
+```
+
+### RSS Sources
+
+**Brazilian:** Revista Espresso, CaféPoint, Tudo Sobre Café, Revista Cafeicultura, Blog do Café
+
+**International:** Perfect Daily Grind, Daily Coffee News, Sprudge, Fresh Cup, SCA News
 
 ---
 
@@ -103,20 +125,21 @@ cp .env.example .env
 ```
 
 Required variables:
+
 ```env
 # Database
-DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/coffee_newsletter
+COFFEE_DATABASE__HOST=localhost
+COFFEE_DATABASE__PORT=5432
+COFFEE_DATABASE__USER=local_user
+COFFEE_DATABASE__DB=local_db
+COFFEE_DATABASE__PASSWORD=local_password
 
 # Anthropic API
-ANTHROPIC_API_KEY=sk-ant-...
+COFFEE_ANTHROPIC_API_KEY=sk-ant-...
 
 # Resend Email
-RESEND_API_KEY=re_...
-FROM_EMAIL=newsletter@your-domain.com
-
-# Admin (security)
-ADMIN_EMAIL=your@email.com
-SECRET_KEY=your-secret-key-here
+COFFEE_RESEND_API_KEY=re_...
+COFFEE_FROM_EMAIL=newsletter@your-domain.com
 ```
 
 ### 4. Run locally
@@ -129,67 +152,14 @@ make fastapi-dev
 
 This executes:
 1. `docker compose up -d database` (PostgreSQL)
-2. Runs migrations automatically
+2. Runs Alembic migrations automatically
 3. Starts FastAPI at `http://localhost:8000`
 
-**Option B — Without Docker (needs external PostgreSQL)**
+**Option B — Without Docker (requires external PostgreSQL)**
 
 ```bash
 uv run --env-file .env fastapi dev
 ```
-
-<!-- ### 5. Test the endpoints
-
-```bash
-# Subscribe
-curl -X POST http://localhost:8000/api/v1/subscribe \
-  -H "Content-Type: application/json" \
-  -d '{"email": "test@email.com"}'
-
-# Get stats
-curl http://localhost:8000/api/v1/stats
-
-# Unsubscribe
-curl -X POST http://localhost:8000/api/v1/unsubscribe \
-  -H "Content-Type: application/json" \
-  -d '{"email": "test@email.com"}'
-``` -->
-
----
-
-## 🔄 Newsletter Pipeline
-
-### How it works
-
-```
-GitHub Actions (Monday, 8am UTC-3) 
-  ↓
-pipeline/main.py
-  ├── scraper.py     → Collects RSS feeds (10+ coffee sources)
-  ├── summarizer.py  → Claude API summarizes articles
-  ├── renderer.py    → Jinja2 renders email template
-  └── sender.py      → Resend sends to subscribers
-```
-
-### Run pipeline manually
-
-```bash
-uv run --env-file .env run_pipeline.py
-```
-
-Or directly:
-
-```bash
-uv run --env-file .env python pipeline/main.py
-```
-
-### RSS Sources (Configured in `app/core/consts.py`)
-
-**Brazilian:**
-- Revista Espresso, CaféPoint, Tudo Sobre Café, Revista Cafeicultura, Blog do Café
-
-**International:**
-- Perfect Daily Grind, Daily Coffee News, Sprudge, Fresh Cup, SCA News
 
 ---
 
@@ -197,21 +167,14 @@ uv run --env-file .env python pipeline/main.py
 
 ### Migrations with Alembic
 
-**Create new migration**
-
 ```bash
+# Create a new migration
 uv run alembic revision --autogenerate -m "description of change"
-```
 
-**Apply migrations**
-
-```bash
+# Apply migrations
 uv run alembic upgrade head
-```
 
-**Check status**
-
-```bash
+# Check current status
 uv run alembic current
 ```
 
@@ -230,51 +193,40 @@ subscribers
 
 ## 🐳 Docker & Compose
 
-### Database
-
 ```bash
-# Start
+# Start database
 make db-up
 
-# Stop
+# Stop database
 make db-down
 
-# Logs
+# View logs
 docker compose logs database
-```
-
-### Compose Variables
-
-Specified in `.env`:
-```env
-COFFEE_DATABASE__POSTGRES_USER=coffee_user
-COFFEE_DATABASE__POSTGRES_PASSWORD=strong-password
-COFFEE_DATABASE__POSTGRES_DB=coffee_newsletter
 ```
 
 ---
 
 ## 🚀 Deployment
 
-### Railway (in production)
+| Service | Target | Notes |
+|---|---|---|
+| API | Railway | Auto-deploys from GitHub, runs migrations on startup |
+| Web | Vercel | Static frontend |
+| Pipeline | GitHub Actions | Scheduled every Monday 8am UTC-3 |
 
-**Automatic deployment**
-- Connected to GitHub
-- Runs migrations automatically
-- Triggers pipeline via webhook/schedule
+**Railway start command (`railway.toml`):**
 
-**Configuration in `railway.toml`:**
 ```toml
 [deploy]
 startCommand = "uv run fastapi run --port $PORT"
 ```
 
-**Variables in Railway**
-- DATABASE_URL (auto-generated)
-- ANTHROPIC_API_KEY
-- RESEND_API_KEY
-- FROM_EMAIL
-- SECRET_KEY
+**Required environment variables in Railway:**
+- `DATABASE_URL` (auto-generated)
+- `ANTHROPIC_API_KEY`
+- `RESEND_API_KEY`
+- `FROM_EMAIL`
+- `SECRET_KEY`
 
 ---
 
@@ -283,12 +235,11 @@ startCommand = "uv run fastapi run --port $PORT"
 ### Phase 1 — Signup Website ✅
 
 - [x] FastAPI app with REST endpoints
-- [x] SQLite → PostgreSQL migrations
+- [x] PostgreSQL with Alembic migrations
 - [x] Responsive HTML frontend
-- [x] Form + real-time stats
 - [x] Email validation with Pydantic
 - [x] Deployed on Railway
-- ⏳ **Next:** Branding and UI/UX improvements
+- [ ] Branding and UI/UX improvements
 
 ### Phase 2 — Automation Pipeline ✅
 
@@ -298,38 +249,43 @@ startCommand = "uv run fastapi run --port $PORT"
 - [x] Resend API integrated
 - [x] GitHub Actions scheduled (Monday 8am)
 - [x] First successful run!
-- ⏳ **Next:** Improve quality, add tests
+- [ ] Improve quality, add tests
+
+### Phase 3 — Refactor (In Progress)
+
+- [x] Migrated to modular monolith (monorepo-style)
+- [x] Separated domain logic from infrastructure
+- [x] Protocol-based abstractions for providers
+- [ ] Unit and integration tests
+- [ ] Rate limiting and security hardening
 
 ---
 
-## 🔐 Security (In progress)
+## 🔐 Security
 
 ### Implemented
 
 - [x] Environment variables via `.env`
 - [x] Email validation
 - [x] Database constraints
-- [x] CORS (needs review)
+- [x] SQL injection prevention (via SQLAlchemy ORM)
 
-### To do
+### Planned
 
 - [ ] Rate limiting on endpoints
 - [ ] CSRF protection
 - [ ] Security headers
-- [ ] SQL injection prevention (done via SQLAlchemy ORM)
-- [ ] Security tests
+- [ ] CORS review
 
 ---
 
-## 🧪 Tests (To do)
-
-### Planned structure
+## 🧪 Tests (Planned)
 
 ```
 tests/
 ├── unit/
 │   ├── services/
-│   ├── models/
+│   ├── repositories/
 │   └── schemas/
 ├── integration/
 │   ├── test_endpoints.py
@@ -337,56 +293,11 @@ tests/
 └── conftest.py
 ```
 
-<!-- ### Run tests
-
-```bash
-uv add --group dev pytest pytest-asyncio pytest-cov
-uv run pytest
-``` -->
+Services are designed to be testable without FastAPI, using dependency injection and Protocol-based abstractions for provider swapping.
 
 ---
 
-## 🎨 Branding (In progress)
-
-### Checklist
-
-- [ ] Coffee Newsletter logo
-- [ ] Consistent color palette (already have brown/coffee)
-- [ ] Improved font stack
-- [ ] Design system in templates
-- [ ] Email signature branding
-- [ ] Newsletter header visual
-
----
-
-## 📈 Next Steps (Roadmap)
-
-### Short term (1-2 weeks)
-
-- [ ] Improve website UI/UX
-- [ ] Add unit tests
-- [ ] Implement rate limiting
-- [ ] Improve API documentation
-
-### Medium term (1 month)
-
-- [ ] Dashboard for open/click statistics
-- [ ] Segment management
-- [ ] Subject line A/B testing
-- [ ] Basic analytics
-
-### Long term
-
-- [ ] Mobile app
-- [ ] Affiliate system
-- [ ] Marketing tool integrations
-- [ ] Multi-language support
-
----
-
-## 🛠️ Development
-
-### Useful commands
+## 🛠️ Useful Commands
 
 ```bash
 # Install dependencies
@@ -395,43 +306,58 @@ uv sync
 # Run app with hot-reload
 make fastapi-dev
 
-# Run pipeline
-uv run python pipeline/main.py
+# Run pipeline manually
+uv run --env-file .env python apps/newsletter_pipeline/main.py
 
-# Check types (if mypy available)
-uv run mypy app/
+# Lint
+uv run ruff check .
 
-# Linter (if ruff available)
-uv run ruff check app/
+# Type check
+uv run mypy .
 
-# Tests (when available)
+# Run tests (when available)
 uv run pytest
 ```
 
-### Code structure
+---
 
-- **Models:** SQLAlchemy ORM in `app/models/`
-- **Schemas:** Pydantic in `app/schemas/` (validation)
-- **Services:** Business logic in `app/services/`
-- **API:** Endpoints in `app/api/v1/`
-- **Pipeline:** Scripts in `pipeline/`
+## 📈 Roadmap
+
+### Short term
+
+- [ ] UI/UX improvements on the web app
+- [ ] Unit and integration tests
+- [ ] Rate limiting
+
+### Medium term
+
+- [ ] Open/click statistics dashboard
+- [ ] Subject line A/B testing
+- [ ] Basic analytics
+
+### Long term
+
+- [ ] Multi-language support
+- [ ] Subscriber segments
+- [ ] Marketing tool integrations
 
 ---
 
-## 📚 Documentation
+## 📚 References
 
-- [FastAPI Docs](https://fastapi.tiangolo.com) — Framework
-- [SQLAlchemy](https://docs.sqlalchemy.org/20/) — ORM
-- [Alembic](https://alembic.sqlalchemy.org/) — Migrations
-- [Pydantic](https://docs.pydantic.dev/) — Validation
-- [Anthropic API](https://docs.anthropic.com/) — Claude
-- [Resend](https://resend.com/docs) — Email
+- [FastAPI](https://fastapi.tiangolo.com)
+- [SQLAlchemy](https://docs.sqlalchemy.org/20/)
+- [Alembic](https://alembic.sqlalchemy.org/)
+- [Pydantic](https://docs.pydantic.dev/)
+- [Anthropic API](https://docs.anthropic.com/)
+- [Resend](https://resend.com/docs)
+- [uv](https://docs.astral.sh/uv/)
 
 ---
 
 ## 📝 License
 
-MIT (see LICENSE)
+MIT — see [LICENSE](LICENSE)
 
 ---
 
