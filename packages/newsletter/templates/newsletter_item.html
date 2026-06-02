@@ -1,17 +1,10 @@
-<table width="100%" cellpadding="0" cellspacing="0" border="0"
-  style="margin-bottom:1.25rem;">
+<table class="item-table" width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr>
-    <td width="3" style="background:#C87941;font-size:0;line-height:0;">&nbsp;</td>
-    <td style="padding:0.875rem 1rem 0.875rem 1.125rem;background:#FFFFFF;border-top:1px solid #EFE9E1;border-right:1px solid #EFE9E1;border-bottom:1px solid #EFE9E1;">
-      <!-- Source tag -->
-      <p style="margin:0 0 0.35rem;font-family:Georgia,serif;font-size:0.7rem;font-weight:normal;letter-spacing:0.12em;text-transform:uppercase;color:#8B5E3C;">{{ source }}</p>
-      <!-- Title -->
-      <p style="margin:0 0 0.5rem;font-family:Georgia,serif;font-size:1rem;font-weight:bold;line-height:1.4;color:#2B1F17;">{{ title }}</p>
-      <!-- Summary -->
-      <p style="margin:0 0 0.75rem;font-family:Arial,sans-serif;font-size:0.875rem;line-height:1.65;color:#6F3F1E;">{{ summary }}</p>
-      <!-- Link -->
-      <a href="{{ url }}"
-        style="font-family:Arial,sans-serif;font-size:0.8rem;color:#8B5E3C;text-decoration:none;letter-spacing:0.02em;">Ler matéria original &rarr;</a>
+    <td class="item-td">
+      <p class="item-source">{{ source }}</p>
+      <p class="item-title">{{ title }}</p>
+      <p class="item-summary">{{ summary }}</p>
+      <a class="item-link" href="{{ url }}">Ler matéria original &rarr;</a>
     </td>
   </tr>
 </table>

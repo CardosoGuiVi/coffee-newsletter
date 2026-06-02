@@ -11,6 +11,9 @@
       margin: 0;
       padding: 0;
       background: #F7F3ED;
+      font-family: Georgia, serif;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
     }
 
     img {
@@ -22,46 +25,196 @@
       color: #6F3F1E;
     }
 
-    /* Prevents iOS/Android from resizing small text */
     * {
       -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
     }
+
+    /* ── Wrapper ── */
+    .wrapper {
+      background: #F7F3ED;
+    }
+
+    .outer-td {
+      padding: 32px 16px;
+    }
+
+    .container {
+      max-width: 680px;
+      width: 100%;
+    }
+
+    /* ── Header ── */
+    .header-td {
+      padding-bottom: 24px;
+      text-align: center;
+    }
+
+    .header-logo {
+      margin: 0 auto;
+    }
+
+    .header-week {
+      margin: 6px 0 0;
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #8B5E3C;
+    }
+
+    /* ── Divider ── */
+    .divider-wrap {
+      padding-bottom: 20px;
+      font-size: 0;
+      line-height: 0;
+    }
+
+    .divider {
+      border-bottom: 1px solid #D4C6AE;
+      font-size: 0;
+    }
+
+    /* ── Intro block ── */
+    .intro-wrap {
+      padding-bottom: 20px;
+    }
+
+    .intro-td {
+      padding: 0px 10px;
+      font-family: Georgia, serif;
+      font-size: 15px;
+      line-height: 26px;
+      color: #2B1F17;
+      text-align: center;
+
+    }
+
+    /* ── Items wrap ── */
+    .items-wrap {
+      padding-bottom: 20px;
+    }
+
+    /* ── Item card ── */
+    .item-table {
+      margin-bottom: 12px;
+      padding: 5px 0px;
+    }
+
+    .item-td {
+      background: #FFFFFF;
+      border-radius: 8px;
+      padding: 14px 16px 14px 18px;
+    }
+
+    .item-source {
+      margin: 0 0 6px;
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      font-weight: normal;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #C87941;
+    }
+
+    .item-title {
+      margin: 0 0 8px;
+      font-family: Georgia, serif;
+      font-size: 17px;
+      font-weight: bold;
+      line-height: 26px;
+      color: #6F3F1E;
+    }
+
+    .item-summary {
+      margin: 0 0 12px;
+      font-size: 15px;
+      line-height: 26px;
+      color: #2B1F17;
+    }
+
+    .item-link {
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      font-weight: bold;
+      color: #C87941;
+      text-decoration: none;
+      letter-spacing: 0px;
+    }
+
+    /* ── Closing ── */
+    .closing-td {
+      padding: 20px 0;
+      border-top: 1px solid #D4C6AE;
+    }
+
+    .closing-text {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: 14px;
+      font-style: italic;
+      line-height: 28px;
+      color: #6F3F1E;
+      text-align: center;
+    }
+
+    /* ── Footer ── */
+    .footer-td {
+      padding-top: 20px;
+      border-top: 1px solid #E9E2D6;
+      text-align: center;
+    }
+
+    .footer-legal {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      line-height: 20px;
+      color: #D4C6AE;
+    }
+
+    .footer-unsub {
+      margin: 16px 0 0;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      color: #D4C6AE;
+    }
+
+    .footer-unsub a {
+      color: #8B5E3C;
+      text-decoration: underline;
+    }
+
+    /* ── Bottom spacing ── */
+    .bottom-spacing {
+      height: 32px;
+    }
   </style>
 </head>
 
-<body style="margin:0;padding:0;background:#F7F3ED;">
-
+<body>
   <!-- Wrapper -->
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F7F3ED;">
+  <table class="wrapper" width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr>
-      <td align="center" style="padding:2rem 1rem;">
+      <td class="outer-td" align="center">
 
         <!-- Container -->
-        <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
+        <table class="container" width="600" cellpadding="0" cellspacing="0" border="0">
 
           <!-- ── Header ───────────────────────────────────── -->
           <tr>
-            <td align="center" style="padding-bottom:2rem;">
-              <!-- Logo text fallback (replace with img tag if you export the logo as png) -->
-              <img src="http://127.0.0.1:8000/images/logo-email.png" width="140" alt="Coado">
-              <!-- <img src="https://coado.club/images/logo-email.png" width="140" alt="Coado"> -->
-              <!-- <p style="margin:0;font-family:Georgia,serif;font-size:1.75rem;font-weight:normal;
-                         letter-spacing:0.08em;color:#6F3F1E;">COADO</p> -->
-              <p style="margin:0.35rem 0 0;font-family:Arial,sans-serif;font-size:0.72rem;
-                         letter-spacing:0.2em;text-transform:uppercase;color:#8B5E3C;">{{ week_label }}</p>
+            <td class="header-td">
+              <img class="header-logo" src="{{ url_api }}/images/logo-dark-email.png" width="140" alt="Coado Dark">
+              <p class="header-week">{{ week_label }}</p>
             </td>
           </tr>
 
           <!-- Header divider -->
           <tr>
-            <td style="font-size:0;line-height:0;padding-bottom:2rem;">
+            <td class="divider-wrap">
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td width="40%" style="border-bottom:1px solid #D4C6AE;font-size:0;">&nbsp;</td>
-                  <td width="20%" align="center"
-                    style="font-family:Georgia,serif;font-size:0.8rem;color:#C87941;padding-bottom:0.5rem;">&#9749;</td>
-                  <td width="40%" style="border-bottom:1px solid #D4C6AE;font-size:0;">&nbsp;</td>
+                  <td class="divider">&nbsp;</td>
                 </tr>
               </table>
             </td>
@@ -69,13 +222,10 @@
 
           <!-- ── Intro block ──────────────────────────────── -->
           <tr>
-            <td style="padding-bottom:2rem;">
+            <td class="intro-wrap">
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td width="3" style="background:#C87941;font-size:0;line-height:0;">&nbsp;</td>
-                  <td style="background:#EFE9E1;padding:1rem 1.25rem;
-                             font-family:Georgia,serif;font-size:0.95rem;line-height:1.75;
-                             color:#2B1F17;">
+                  <td class="intro-td">
                     {{ intro }}
                   </td>
                 </tr>
@@ -83,19 +233,9 @@
             </td>
           </tr>
 
-          <!-- ── Section label ───────────────────────────── -->
-          <tr>
-            <td style="padding-bottom:1rem;">
-              <p style="margin:0;font-family:Arial,sans-serif;font-size:0.68rem;
-                         letter-spacing:0.2em;text-transform:uppercase;color:#8B5E3C;">
-                Esta semana
-              </p>
-            </td>
-          </tr>
-
           <!-- ── Items ───────────────────────────────────── -->
           <tr>
-            <td style="padding-bottom:2rem;">
+            <td class="items-wrap">
               {% for item in items %}
               {% with title=item.title, summary=item.summary, source=item.source, url=item.url %}
               {% include "newsletter_item.html" %}
@@ -106,32 +246,28 @@
 
           <!-- ── Closing ─────────────────────────────────── -->
           <tr>
-            <td style="padding:1.5rem 0;border-top:1px solid #D4C6AE;">
-              <p style="margin:0;font-family:Georgia,serif;font-size:0.9rem;font-style:italic;
-                         line-height:1.75;color:#6F3F1E;text-align:center;">
-                {{ closing }}
-              </p>
+            <td class="closing-td">
+              <p class="closing-text">{{ closing }}</p>
             </td>
           </tr>
 
           <!-- ── Footer ──────────────────────────────────── -->
           <tr>
-            <td align="center" style="padding-top:1.5rem;border-top:1px solid #EFE9E1;">
-              <p style="margin:0;font-family:Arial,sans-serif;font-size:0.72rem;
-                         line-height:1.6;color:#D4C6AE;">
+            <td class="footer-td">
+              <p class="footer-legal">
                 Todos os artigos pertencem aos seus respectivos autores e publicações.<br>
                 Esta newsletter faz curadoria e resume conteúdo público, sempre com link para a fonte original.
               </p>
-              <p style="margin:1rem 0 0;font-family:Arial,sans-serif;font-size:0.72rem;color:#D4C6AE;">
+              <p class="footer-unsub">
                 Não quer mais receber?
-                <a href="{{ unsubscribe_url }}" style="color:#8B5E3C;text-decoration:underline;">Cancelar inscrição</a>
+                <a href="{{ unsubscribe_url }}">Cancelar inscrição</a>
               </p>
             </td>
           </tr>
 
           <!-- Bottom spacing -->
           <tr>
-            <td style="height:2rem;">&nbsp;</td>
+            <td class="bottom-spacing">&nbsp;</td>
           </tr>
 
         </table>
