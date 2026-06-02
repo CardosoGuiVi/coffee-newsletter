@@ -18,6 +18,7 @@ def render_newsletter(newsletter: Newsletter) -> str:
     template = env.get_template("newsletter.html")
 
     return template.render(
+        url_api=settings.API_URL,
         week_label=newsletter.week_label,
         intro=newsletter.intro,
         items=newsletter.items,
