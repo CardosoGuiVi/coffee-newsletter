@@ -1,6 +1,6 @@
 import asyncio
 
-from packages.core.database import AsyncSessionLocal
+from packages.database.session import AsyncSessionLocal
 from packages.mailer.providers.resend import ResendMailer
 from packages.newsletter.repository import SubscriberRepository
 from packages.newsletter.services.campaign import CampaignService
