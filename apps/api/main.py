@@ -16,7 +16,7 @@ IMAGES_DIR = STATIC_DIR / "images"
 app = FastAPI(title="Coffee Newsletter")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if settings.DEBUG else ["https://seudominio.com"],
+    allow_origins=["*"] if settings.DEBUG else [settings.API_URL],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

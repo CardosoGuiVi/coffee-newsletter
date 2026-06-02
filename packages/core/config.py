@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "Coado"
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
-    API_URL: str = "http://localhost:8000" if DEBUG else ""
+    API_URL: str
 
     # Pipeline
     CLAUDE_MODEL: str = "claude-haiku-4-5-20251001"
