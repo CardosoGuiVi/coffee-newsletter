@@ -21,3 +21,8 @@ class Newsletter(BaseModel):
     items: list[NewsletterItem]
     closing: str
     week_label: str
+
+
+class StatsResult(BaseModel):
+    total_subscribers: int
+    joined_this_week: int
