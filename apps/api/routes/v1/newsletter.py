@@ -1,9 +1,10 @@
 from fastapi import APIRouter, status, Depends, HTTPException
 
-from apps.api.schemas.newsletter import SubscribeRequest, SubscribeResponse, StatsResponse, UnsubscribeRequest
-from apps.api.dependencies.newsletter import get_service
-from packages.database.models.newsletter import Subscriber
+from apps.api.schemas.newsletter import SubscribeRequest, SubscribeResponse, UnsubscribeRequest, UnsubscribeResponse
+from packages.newsletter.schemas import StatsResult
+from apps.api.dependencies.newsletter import get_subscription_service
 from packages.newsletter.services.subscription import SubscriptionService
+from packages.mailer.exceptions import MailerError
 from packages.newsletter.exceptions import (
     EmailAlreadySubscribed,
     SubscriptionCooldownError,
@@ -22,10 +23,11 @@ router = APIRouter()
 )
 async def subscribe(
     payload: SubscribeRequest,
-    service: SubscriptionService = Depends(get_service)
-) -> Subscriber:
+    service: SubscriptionService = Depends(get_subscription_service)
+) -> SubscribeResponse:
     try:
-        return await service.register(payload)
+        subscriber = await service.register(payload.email)
+        return SubscribeResponse.model_validate(subscriber)
     except EmailAlreadySubscribed:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -36,30 +38,36 @@ async def subscribe(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="You must wait 48 hours after unsubscribing."
         )
+    except MailerError:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Subscribed successfully but failed to send welcome email."
+        )
 
 @router.get(
     "/stats",
-    response_model=StatsResponse,
+    response_model=StatsResult,
     status_code=status.HTTP_200_OK,
     summary="Retorna estatísticas da newsletter."
 )
 async def get_stats(
-    service: SubscriptionService = Depends(get_service)
-) -> StatsResponse:
+    service: SubscriptionService = Depends(get_subscription_service)
+) -> StatsResult:
     return await service.stats()
-
 
 @router.post(
     "/unsubscribe",
+    response_model=UnsubscribeResponse,
     status_code=status.HTTP_200_OK,
     summary="Desinscreve um email da newsletter."
 )
 async def unsubscribe(
     payload: UnsubscribeRequest,
-    service: SubscriptionService = Depends(get_service)
-) -> bool:
+    service: SubscriptionService = Depends(get_subscription_service)
+) -> UnsubscribeResponse:
     try:
-        return await service.unregister(payload)
+        await service.unregister(payload.email)
+        return UnsubscribeResponse(message="Unsubscribed successfully.")
     except SubscriberNotFound:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
