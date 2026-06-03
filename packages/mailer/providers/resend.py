@@ -1,6 +1,6 @@
 import resend
 
-from packages.core.config import settings
+from packages.core import settings
 from packages.mailer.exceptions import MailerError
 from packages.newsletter.renderer import render_welcome
 
@@ -46,6 +46,6 @@ class ResendMailer:
         }
 
         try:
-            await resend.Emails.send(params)
+            resend.Emails.send(params)
         except Exception as e:
             raise MailerError("Failed to send email") from e

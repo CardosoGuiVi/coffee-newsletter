@@ -1,6 +1,6 @@
 from anthropic import AsyncAnthropic
 
-from packages.core.config import settings
+from packages.core import settings
 
 
 class ClaudeClient:

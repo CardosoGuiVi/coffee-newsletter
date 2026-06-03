@@ -26,9 +26,9 @@ class Settings(BaseSettings):
     CLAUDE_MODEL: str = "claude-haiku-4-5-20251001"
     CLAUDE_MAX_TOKENS: int = 2000
     DAYS_BACK: int = 7
-    ANTHROPIC_API_KEY: str | None
-    RESEND_API_KEY: str | None
-    FROM_EMAIL: str | None
+    ANTHROPIC_API_KEY: str
+    RESEND_API_KEY: str
+    FROM_EMAIL: str
 
 
 settings = Settings()

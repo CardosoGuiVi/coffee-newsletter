@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 import packages.database.models  # noqa: F401 — registra todos os models
-from packages.core.config import settings
+from packages.core import settings
 from packages.database.base import Base
 
 config = context.config

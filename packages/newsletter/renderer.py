@@ -2,7 +2,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from packages.core.config import settings
+from packages.core import settings
 from packages.newsletter.schemas import Newsletter
 
 BASE_DIR = Path(__file__).resolve().parent
