@@ -45,22 +45,20 @@ class SubscriberRepository:
     async def list_active_subscribers(
         self,
     ) -> Sequence[Subscriber]:
-        result = await self.db.execute(
-            select(Subscriber).where(Subscriber.subscribed == 1)
-        )
+        result = await self.db.execute(select(Subscriber).where(Subscriber.subscribed))
 
         return result.scalars().all()
 
     async def count_active(self) -> int:
         result = await self.db.execute(
-            select(func.count()).where(Subscriber.subscribed == 1)
+            select(func.count()).where(Subscriber.subscribed)
         )
         return result.scalar_one()
 
     async def count_new_since(self, since: datetime) -> int:
         result = await self.db.execute(
             select(func.count()).where(
-                Subscriber.subscribed == 1, Subscriber.created_at >= since
+                Subscriber.subscribed, Subscriber.created_at >= since
             )
         )
         return result.scalar_one()
