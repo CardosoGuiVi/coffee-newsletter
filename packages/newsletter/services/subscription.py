@@ -37,7 +37,7 @@ class SubscriptionService:
         existing = await self.subscriber_repository.get_by_email(email)
 
         if existing:
-            if existing.subscribed == 1:
+            if existing.subscribed:
                 raise EmailAlreadySubscribed()
             if self._is_within_cooldown(existing.unsubscribed_at):
                 raise SubscriptionCooldownError()
