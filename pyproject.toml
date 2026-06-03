@@ -27,6 +27,7 @@ entrypoint = "apps.api.main:app"
 [dependency-groups]
 dev = [
     "ipython>=9.13.0",
+    "mypy>=2.1.0",
     "pytest>=9.0.3",
     "pytest-asyncio>=1.4.0",
     "pytest-cov>=7.1.0",
@@ -56,3 +57,21 @@ ignore = [
     "B008", # do not perform function calls in default args (FastAPI depende disso)
     "E501", # line too long — deixa o formatter cuidar
 ]
+
+[tool.mypy]
+python_version = "3.12"
+strict = false
+ignore_missing_imports = true
+explicit_package_bases = true
+exclude = [
+    "packages/database/migrations/",
+    "apps/web/",
+]
+plugins = [
+    "pydantic.mypy",
+    "sqlalchemy.ext.mypy.plugin",
+]
+
+[[tool.mypy.overrides]]
+module = "resend.*"
+ignore_missing_imports = true
