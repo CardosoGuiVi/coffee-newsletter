@@ -18,13 +18,14 @@ class Subscriber(Base):
     email: Mapped[str] = mapped_column(
         sa.String(255), unique=True, nullable=False, index=True
     )
-    subscribed: Mapped[str] = mapped_column(sa.Integer, nullable=True, default=1)
-    created_at: Mapped[datetime] = mapped_column(
+    subscribed: Mapped[bool] = mapped_column(sa.Boolean, nullable=False, default=True)
+    created_at: Mapped[datetime | None] = mapped_column(
         sa.DateTime(timezone=True),
         server_default=sa.func.now(),
         nullable=False,
     )
-    unsubscribed_at: Mapped[datetime] = mapped_column(
+    unsubscribed_at: Mapped[datetime | None] = mapped_column(
         sa.DateTime(timezone=True),
         nullable=True,
+        default=None,
     )

@@ -1,14 +1,27 @@
-.PHONY: db-up db-down fastapi-dev lint lint-ci
+.PHONY: fastapi-dev db-up db-down db-migrate db-revision lint lint-ci typecheck check
 
+#----------------- Defaults -----------------
+env_file ?= .env
+
+#---------------- Dev Server ----------------
+fastapi-dev: db-up
+	uv run --env-file $(env_file) fastapi dev
+
+
+#----------------- Database -----------------
 db-up:
-	docker compose --env-file .env up -d database
+	docker compose --env-file $(env_file) up -d database
 
 db-down:
 	docker compose down database
 
-fastapi-dev: db-up
-	uv run --env-file .env fastapi dev
+db-migrate:
+	uv run --env-file $(env_file) alembic upgrade head
 
+db-revision:
+	uv run --env-file $(env_file) alembic revision --autogenerate -m "$(msg)"
+
+#--------------- Code quality ---------------
 lint:
 	uv run ruff format .
 	uv run ruff check --fix .
@@ -16,3 +29,8 @@ lint:
 lint-ci:
 	uv run ruff format --check .
 	uv run ruff check .
+
+typecheck:
+	uv run mypy packages/ apps/
+
+check: lint-ci typecheck

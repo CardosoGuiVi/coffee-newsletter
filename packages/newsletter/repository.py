@@ -28,7 +28,7 @@ class SubscriberRepository:
         return subscriber
 
     async def update(self, subscriber: Subscriber) -> Subscriber:
-        subscriber.subscribed = 1
+        subscriber.subscribed = True
         subscriber.unsubscribed_at = None
         subscriber.created_at = datetime.now(UTC)
         await self.db.commit()
@@ -36,7 +36,7 @@ class SubscriberRepository:
         return subscriber
 
     async def soft_delete(self, subscriber: Subscriber) -> None:
-        subscriber.subscribed = 0
+        subscriber.subscribed = False
         subscriber.unsubscribed_at = datetime.now(UTC)
         subscriber.created_at = datetime.now(UTC)
         await self.db.commit()

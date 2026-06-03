@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 
 import feedparser
 
-from packages.core.config import settings
+from packages.core import settings
 from packages.newsletter.schemas import Article
 from packages.scraper.sources import RSS_FEEDS
 
@@ -11,7 +11,8 @@ from packages.scraper.sources import RSS_FEEDS
 def is_recent(entry) -> bool:
     if not hasattr(entry, "published_parsed") or not entry.published_parsed:
         return True
-    published = datetime(*entry.published_parsed[:6], tzinfo=UTC)
+    published = datetime(*entry.published_parsed[:6])
+    published.astimezone(UTC)
     return published >= datetime.now(UTC) - timedelta(days=settings.DAYS_BACK)
 
 
