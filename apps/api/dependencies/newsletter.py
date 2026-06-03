@@ -3,7 +3,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from packages.database.session import get_session
 from packages.newsletter.services.subscription import SubscriptionService
+from packages.mailer.providers.resend import ResendMailer
+from packages.newsletter.repository import SubscriberRepository
 
 
-async def get_service(db: AsyncSession = Depends(get_session)) -> SubscriptionService:
-    return SubscriptionService(db)
+async def get_subscription_service(
+    session: AsyncSession = Depends(get_session),
+) -> SubscriptionService:
+    return SubscriptionService(
+        subscriber_repository=SubscriberRepository(session),
+        mailer=ResendMailer(),
+    )
