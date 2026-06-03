@@ -2,10 +2,10 @@ import asyncio
 import json
 from pathlib import Path
 
-from packages.scraper.rss import scrape_articles
-from packages.newsletter.summarizer import summarize_articles
 from packages.newsletter.renderer import render_newsletter
 from packages.newsletter.schemas import Newsletter
+from packages.newsletter.summarizer import summarize_articles
+from packages.scraper.rss import scrape_articles
 
 BASE_DIR = Path(__file__).resolve().parent
 ARTIFACTS_DIR = BASE_DIR.parent / "artifacts"
@@ -28,7 +28,7 @@ async def render_preview() -> None:
             json.dump(summarized.model_dump(), f, ensure_ascii=False, indent=2)
         print(f"Newsletter saved to {NEWSLETTER_PATH}")
 
-    with open(NEWSLETTER_PATH, "r", encoding="utf-8") as f:
+    with open(NEWSLETTER_PATH, encoding="utf-8") as f:
         data = json.load(f)
 
     html = render_newsletter(Newsletter(**data))

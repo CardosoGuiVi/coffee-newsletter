@@ -1,11 +1,11 @@
 import asyncio
+from datetime import UTC, datetime, timedelta
+
 import feedparser
-from datetime import datetime, timedelta, UTC
 
-from packages.newsletter.schemas import Article
 from packages.core.config import settings
+from packages.newsletter.schemas import Article
 from packages.scraper.sources import RSS_FEEDS
-
 
 
 def is_recent(entry) -> bool:
@@ -22,13 +22,15 @@ def parse_feed(source_name: str, feed_url: str) -> list[Article]:
         for entry in feed.entries:
             if not is_recent(entry):
                 continue
-            articles.append(Article(
-                title=entry.get("title", "Sem título"),
-                url=entry.get("link", ""),
-                source=source_name,
-                summary=entry.get("summary", "")[:500],
-                published_at=entry.get("published", ""),
-            ))
+            articles.append(
+                Article(
+                    title=entry.get("title", "Sem título"),
+                    url=entry.get("link", ""),
+                    source=source_name,
+                    summary=entry.get("summary", "")[:500],
+                    published_at=entry.get("published", ""),
+                )
+            )
         return articles
     except Exception as e:
         print(f"⚠️  Erro ao buscar {source_name}: {e}")

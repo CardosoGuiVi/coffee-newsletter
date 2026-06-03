@@ -8,6 +8,7 @@ class Article(BaseModel):
     summary: str | None = None
     published_at: str | None = None
 
+
 class NewsletterItem(BaseModel):
     title: str
     source: str

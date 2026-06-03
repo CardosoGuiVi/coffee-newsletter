@@ -1,8 +1,8 @@
-from datetime import datetime, UTC
 from collections.abc import Sequence
-from sqlalchemy import select
+from datetime import UTC, datetime
+
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import func
 
 from packages.database.models.newsletter import Subscriber
 
@@ -21,7 +21,7 @@ class SubscriberRepository:
         return result.scalar_one_or_none()
 
     async def create(self, email: str) -> Subscriber:
-        subscriber = Subscriber(email = email)
+        subscriber = Subscriber(email=email)
         self.db.add(subscriber)
         await self.db.commit()
         await self.db.refresh(subscriber)
@@ -46,9 +46,7 @@ class SubscriberRepository:
         self,
     ) -> Sequence[Subscriber]:
         result = await self.db.execute(
-            select(Subscriber).where(
-                Subscriber.subscribed == 1
-            )
+            select(Subscriber).where(Subscriber.subscribed == 1)
         )
 
         return result.scalars().all()
@@ -62,8 +60,7 @@ class SubscriberRepository:
     async def count_new_since(self, since: datetime) -> int:
         result = await self.db.execute(
             select(func.count()).where(
-                Subscriber.subscribed == 1,
-                Subscriber.created_at >= since
+                Subscriber.subscribed == 1, Subscriber.created_at >= since
             )
         )
         return result.scalar_one()

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 class PromptTemplate:
     articles_text: str
 
+
 PROMPT: str = """Você é o editor de uma newsletter semanal chamada "Café & Novidades".
 Seu público são entusiastas de café especial brasileiros — curiosos, cultos, apaixonados pela bebida.
 
@@ -34,3 +35,7 @@ Formato exato:
 
 Artigos desta semana:
 {articles_text}"""
+
+
+def build_prompt(articles_text: str) -> str:
+    return PROMPT.format_map(vars(PromptTemplate(articles_text=articles_text)))

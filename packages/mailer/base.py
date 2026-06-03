@@ -1,4 +1,4 @@
-from typing import Protocol, Any
+from typing import Any, Protocol
 
 
 class Mailer(Protocol):
@@ -9,7 +9,4 @@ class Mailer(Protocol):
         html: str,
     ) -> Any: ...
 
-    async def send_welcome(
-        self,
-        email: str
-    ) -> None: ...
+    async def send_welcome(self, email: str) -> None: ...

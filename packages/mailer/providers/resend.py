@@ -1,8 +1,8 @@
 import resend
 
 from packages.core.config import settings
-from packages.newsletter.renderer import render_welcome
 from packages.mailer.exceptions import MailerError
+from packages.newsletter.renderer import render_welcome
 
 
 class ResendMailer:
@@ -20,27 +20,31 @@ class ResendMailer:
             "to": [email],
             "subject": subject,
             "html": html,
+            "headers": {
+                "List-Unsubscribe": f"<{settings.API_URL}/unsubscribe>",
+                "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+            },
         }
 
         try:
-            return await resend.Emails.send(params)
+            return resend.Emails.send(params)
         except Exception as e:
             raise MailerError("Failed to send email") from e
 
-
-    async def send_welcome(
-        self,
-        email: str
-    ) -> None:
+    async def send_welcome(self, email: str) -> None:
         html = render_welcome()
 
         params: resend.Emails.SendParams = {
-            "from": settings.FROM_EMAIL, # Change to welcome@coado.club
+            "from": settings.FROM_EMAIL,  # Change to welcome@coado.club
             "to": [email],
             "subject": "Apenas um teste",
             "html": html,
+            "headers": {
+                "List-Unsubscribe": f"<{settings.API_URL}/unsubscribe>",
+                "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+            },
         }
-        
+
         try:
             await resend.Emails.send(params)
         except Exception as e:
