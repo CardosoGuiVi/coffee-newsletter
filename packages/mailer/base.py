@@ -8,3 +8,8 @@ class Mailer(Protocol):
         email: str,
         html: str,
     ) -> Any: ...
+
+    async def send_welcome(
+        self,
+        email: str
+    ) -> None: ...
