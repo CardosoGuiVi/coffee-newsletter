@@ -17,6 +17,5 @@ class UnsubscribeRequest(BaseModel):
     email: EmailStr
 
 
-class StatsResponse(BaseModel):
-    total_subscribers: int
-    joined_this_week: int
+class UnsubscribeResponse(BaseModel):
+    message: str
