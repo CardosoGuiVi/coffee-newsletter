@@ -27,4 +27,32 @@ entrypoint = "apps.api.main:app"
 [dependency-groups]
 dev = [
     "ipython>=9.13.0",
+    "pytest>=9.0.3",
+    "pytest-asyncio>=1.4.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.15",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = [
+    ".venv",
+    "packages/database/migrations/versions",
+    "__pycache__"
+]
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "B008", # do not perform function calls in default args (FastAPI depende disso)
+    "E501", # line too long — deixa o formatter cuidar
 ]
