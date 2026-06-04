@@ -1,3 +1,4 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from packages.database.schemas import DatabaseSettings
@@ -29,6 +30,12 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: str
     RESEND_API_KEY: str
     FROM_EMAIL: str
+
+    # Security
+    ALLOWED_HOSTS: list[str] = Field(
+        default=["coffee.guicardoso.dev.br", "localhost", "127.0.0.1"]
+    )
+    CORS_ORIGINS: list[str] = Field(default=["https://coffee.guicardoso.dev.br"])
 
 
 settings = Settings()
