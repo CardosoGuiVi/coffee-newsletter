@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from apps.api.dependencies.newsletter import get_subscription_service
 from apps.api.schemas.newsletter import (
@@ -7,6 +7,7 @@ from apps.api.schemas.newsletter import (
     UnsubscribeRequest,
     UnsubscribeResponse,
 )
+from apps.api.security import limiter
 from packages.mailer.exceptions import MailerError
 from packages.newsletter.exceptions import (
     EmailAlreadySubscribed,
@@ -25,7 +26,9 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
     summary="Inscreve um novo email na newsletter.",
 )
+@limiter.limit("5/minute")
 async def subscribe(
+    request: Request,
     payload: SubscribeRequest,
     service: SubscriptionService = Depends(get_subscription_service),
 ) -> SubscribeResponse:
@@ -49,25 +52,15 @@ async def subscribe(
         ) from e
 
 
-@router.get(
-    "/stats",
-    response_model=StatsResult,
-    status_code=status.HTTP_200_OK,
-    summary="Retorna estatísticas da newsletter.",
-)
-async def get_stats(
-    service: SubscriptionService = Depends(get_subscription_service),
-) -> StatsResult:
-    return await service.stats()
-
-
 @router.post(
     "/unsubscribe",
     response_model=UnsubscribeResponse,
     status_code=status.HTTP_200_OK,
     summary="Desinscreve um email da newsletter.",
 )
+@limiter.limit("5/minute")
 async def unsubscribe(
+    request: Request,
     payload: UnsubscribeRequest,
     service: SubscriptionService = Depends(get_subscription_service),
 ) -> UnsubscribeResponse:
@@ -78,3 +71,17 @@ async def unsubscribe(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Email not found."
         ) from e
+
+
+@router.get(
+    "/stats",
+    response_model=StatsResult,
+    status_code=status.HTTP_200_OK,
+    summary="Retorna estatísticas da newsletter.",
+)
+@limiter.limit("30/minute")
+async def get_stats(
+    request: Request,
+    service: SubscriptionService = Depends(get_subscription_service),
+) -> StatsResult:
+    return await service.stats()
