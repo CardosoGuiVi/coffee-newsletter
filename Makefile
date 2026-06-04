@@ -1,4 +1,4 @@
-.PHONY: fastapi-dev db-up db-down db-migrate db-revision lint lint-ci typecheck check
+.PHONY: fastapi-dev db-up db-down db-migrate db-revision lint lint-ci typecheck check pre-commit
 
 #----------------- Defaults -----------------
 env_file ?= .env
@@ -34,3 +34,6 @@ typecheck:
 	uv run mypy packages/ apps/
 
 check: lint-ci typecheck
+
+pre-commit:
+	uv run pre-commit run --all-files
