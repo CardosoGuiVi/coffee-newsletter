@@ -35,5 +35,5 @@ typecheck:
 
 check: lint-ci typecheck
 
-pre-commit:
+pre-commit: lint typecheck
 	uv run pre-commit run --all-files
