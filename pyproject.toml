@@ -28,7 +28,7 @@ entrypoint = "apps.api.main:app"
 
 [dependency-groups]
 dev = [
-    "ipython>=9.14.0",
+    "ipython>=9.14.1",
     "mypy>=2.1.0",
     "pre-commit>=4.6.0",
     "pytest>=9.0.3",
