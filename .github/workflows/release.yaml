@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    branches: [development]
+
+jobs:
+  open-release-pr:
+    name: Open PR to main
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: development
+          title: "Release — development → main"
+          body: |
+            Automated release PR.
+            
+            Merge this to deploy to production.
+          labels: release
