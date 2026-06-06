@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    branches: [development]
+
+jobs:
+  open-release-pr:
+    name: Open PR to main
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Check if a PR already exists to avoid duplicates
+          EXISTING=$(gh pr list --base main --head development --json number --jq length)
+          
+          if [ "$EXISTING" -eq "0" ]; then
+            gh pr create \
+              --base main \
+              --head development \
+              --title "Release — development → main" \
+              --body "Automated release PR. Merge this to deploy to production." \
+              --label release
+          else
+            echo "PR already exists, skipping."
+          fi
