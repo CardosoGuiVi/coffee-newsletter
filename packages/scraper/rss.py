@@ -3,9 +3,10 @@ from datetime import UTC, datetime, timedelta
 
 import feedparser
 
-from packages.core import settings
 from packages.newsletter.schemas import Article
 from packages.scraper.sources import RSS_FEEDS
+
+DAYS_BACK: int = 7
 
 
 def is_recent(entry) -> bool:
@@ -13,7 +14,7 @@ def is_recent(entry) -> bool:
         return True
     published = datetime(*entry.published_parsed[:6])
     published.astimezone(UTC)
-    return published >= datetime.now(UTC) - timedelta(days=settings.DAYS_BACK)
+    return published >= datetime.now(UTC) - timedelta(days=DAYS_BACK)
 
 
 def parse_feed(source_name: str, feed_url: str) -> list[Article]:
