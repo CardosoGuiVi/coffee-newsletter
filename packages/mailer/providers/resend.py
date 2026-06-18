@@ -14,6 +14,7 @@ class ResendMailer:
         subject: str,
         email: str,
         html: str,
+        unsubscribe_url: str,
     ) -> resend.Emails.SendResponse:
         params: resend.Emails.SendParams = {
             "from": settings.FROM_EMAIL_NEWSLETTER,
@@ -21,7 +22,7 @@ class ResendMailer:
             "subject": subject,
             "html": html,
             "headers": {
-                "List-Unsubscribe": f"<{settings.API_URL}/unsubscribe>",
+                "List-Unsubscribe": f"<{unsubscribe_url}>",
                 "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
             },
         }
