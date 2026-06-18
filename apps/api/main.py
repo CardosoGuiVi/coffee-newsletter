@@ -20,7 +20,7 @@ IMAGES_DIR = STATIC_DIR / "images"
 
 app = FastAPI(
     title="Coado",
-    version="0.1.0",
+    version="0.2.0",
 )
 
 app.state.limiter = limiter
@@ -44,4 +44,3 @@ app.include_router(health.router, prefix="/v1")
 app.include_router(newsletter.router, prefix="/v1")
 
 app.mount("/images", StaticFiles(directory=str(IMAGES_DIR)), name="images")
-app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="web")
