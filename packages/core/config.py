@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
     API_URL: str = Field(default="https://coffee.guicardoso.dev.br")
+    SECRET_KEY: str
 
     # Providers
     AI_PROVIDER: AnthropicSettings
