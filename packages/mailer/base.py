@@ -7,6 +7,7 @@ class Mailer(Protocol):
         subject: str,
         email: str,
         html: str,
+        unsubscribe_url: str,
     ) -> Any: ...
 
     async def send_welcome(self, email: str) -> None: ...

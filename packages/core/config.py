@@ -23,11 +23,13 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
     API_URL: str = Field(default="https://coffee.guicardoso.dev.br")
+    SECRET_KEY: str
 
     # Providers
     AI_PROVIDER: AnthropicSettings
     RESEND_API_KEY: str
-    FROM_EMAIL: str
+    FROM_EMAIL_NEWSLETTER: str
+    FROM_EMAIL_WELCOME: str
 
     # Security
     ALLOWED_HOSTS: list[str] = Field(
