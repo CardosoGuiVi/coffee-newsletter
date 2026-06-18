@@ -3,6 +3,7 @@ import asyncio
 import json
 from pathlib import Path
 
+from packages.core.tokens import generate_unsubscribe_token
 from packages.mailer.providers.resend import ResendMailer
 from packages.newsletter.renderer import render_newsletter
 from packages.newsletter.schemas import Newsletter
@@ -11,6 +12,8 @@ BASE_DIR = Path(__file__).resolve().parent
 ARTIFACTS_DIR = BASE_DIR.parent / "artifacts"
 NEWSLETTER_PATH = ARTIFACTS_DIR / "newsletter.json"
 
+
+DOMAIN: str = "https://coffee.guicardoso.dev.br"
 TEST_EMAIL = "cardoso.guivi@gmail.com"
 
 
@@ -26,7 +29,16 @@ async def send_newsletter():
     html = render_newsletter(newsletter)
     mailer = ResendMailer()
 
-    await mailer.send_email(subject=newsletter.subject, email=TEST_EMAIL, html=html)
+    token = generate_unsubscribe_token(TEST_EMAIL)
+    unsubscribe_url = (
+        f"{DOMAIN}/v1/unsubscribe/one-click?email={TEST_EMAIL}&token={token}"
+    )
+    await mailer.send_email(
+        subject=newsletter.subject,
+        email=TEST_EMAIL,
+        html=html,
+        unsubscribe_url=unsubscribe_url,
+    )
 
 
 async def send_welcome() -> None:
