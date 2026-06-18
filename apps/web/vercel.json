@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/v1/(.*)", "destination": "https://coffee.guicardoso.dev.br/v1/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
