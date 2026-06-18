@@ -27,7 +27,8 @@ class Settings(BaseSettings):
     # Providers
     AI_PROVIDER: AnthropicSettings
     RESEND_API_KEY: str
-    FROM_EMAIL: str
+    FROM_EMAIL_NEWSLETTER: str
+    FROM_EMAIL_WELCOME: str
 
     # Security
     ALLOWED_HOSTS: list[str] = Field(
