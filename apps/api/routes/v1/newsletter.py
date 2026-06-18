@@ -8,6 +8,7 @@ from apps.api.schemas.newsletter import (
     UnsubscribeResponse,
 )
 from apps.api.security import limiter
+from packages.core.tokens import verify_unsubscribe_token
 from packages.mailer.exceptions import MailerError
 from packages.newsletter.exceptions import (
     EmailAlreadySubscribed,
@@ -70,6 +71,34 @@ async def unsubscribe(
     except SubscriberNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Email not found."
+        ) from e
+
+
+@router.post(
+    "/unsubscribe/one-click",
+    response_model=UnsubscribeResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Desinscreve um email da newsletter.",
+)
+@limiter.limit("5/minute")
+async def unsubscribe_one_click(
+    request: Request,
+    email: str,
+    token: str,
+    service: SubscriptionService = Depends(get_subscription_service),
+) -> UnsubscribeResponse:
+    if not verify_unsubscribe_token(email, token):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid unsubscribe token.",
+        )
+    try:
+        await service.unregister(email)
+        return UnsubscribeResponse(message="Unsubscribed successfully.")
+    except SubscriberNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Email not found.",
         ) from e
 
 
