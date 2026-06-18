@@ -2,8 +2,7 @@ name: Coffee Newsletter — Envio Semanal
 
 on:
   schedule:
-    - cron: "0 8 * * 1"
-      timezone: "America/Sao_Paulo"
+    - cron: "0 11 * * 1"
   workflow_dispatch:
 
 jobs:

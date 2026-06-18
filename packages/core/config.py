@@ -1,6 +1,7 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from packages.ai.schemas import AnthropicSettings
 from packages.database.schemas import DatabaseSettings
 
 
@@ -21,15 +22,14 @@ class Settings(BaseSettings):
     APP_NAME: str = "Coado"
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
-    API_URL: str
+    API_URL: str = Field(default="https://coffee.guicardoso.dev.br")
+    SECRET_KEY: str
 
-    # Pipeline
-    CLAUDE_MODEL: str = "claude-haiku-4-5-20251001"
-    CLAUDE_MAX_TOKENS: int = 2000
-    DAYS_BACK: int = 7
-    ANTHROPIC_API_KEY: str
+    # Providers
+    AI_PROVIDER: AnthropicSettings
     RESEND_API_KEY: str
-    FROM_EMAIL: str
+    FROM_EMAIL_NEWSLETTER: str
+    FROM_EMAIL_WELCOME: str
 
     # Security
     ALLOWED_HOSTS: list[str] = Field(

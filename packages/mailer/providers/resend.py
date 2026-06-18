@@ -14,14 +14,15 @@ class ResendMailer:
         subject: str,
         email: str,
         html: str,
+        unsubscribe_url: str,
     ) -> resend.Emails.SendResponse:
         params: resend.Emails.SendParams = {
-            "from": settings.FROM_EMAIL,
+            "from": settings.FROM_EMAIL_NEWSLETTER,
             "to": [email],
             "subject": subject,
             "html": html,
             "headers": {
-                "List-Unsubscribe": f"<{settings.API_URL}/unsubscribe>",
+                "List-Unsubscribe": f"<{unsubscribe_url}>",
                 "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
             },
         }
@@ -35,9 +36,9 @@ class ResendMailer:
         html = render_welcome()
 
         params: resend.Emails.SendParams = {
-            "from": settings.FROM_EMAIL,  # Change to welcome@coado.club
+            "from": settings.FROM_EMAIL_WELCOME,
             "to": [email],
-            "subject": "Apenas um teste",
+            "subject": "☕ Bem-vindo. Seu café está quase pronto.",
             "html": html,
             "headers": {
                 "List-Unsubscribe": f"<{settings.API_URL}/unsubscribe>",
