@@ -1,6 +1,6 @@
 import json
 
-from packages.ai.claude import ClaudeClient
+from packages.ai.providers.anthropic import AnthropicClient
 from packages.newsletter.prompts import PROMPT, PromptTemplate
 from packages.newsletter.schemas import Article, Newsletter
 
@@ -36,7 +36,7 @@ async def summarize_articles(
 ) -> Newsletter:
     articles_text = format_articles(articles)
     prompt = build_prompt(articles_text)
-    response = await ClaudeClient().generate(prompt)
+    response = await AnthropicClient().generate(prompt)
     data = clean_claude_response(response)
 
     return Newsletter(**data)
