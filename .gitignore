@@ -15,6 +15,7 @@ htmlcov/
 dist/
 *.egg-info/
 *.log
+apps/web/js/config.js
  
 # Alembic
 alembic/versions/*.pyc
