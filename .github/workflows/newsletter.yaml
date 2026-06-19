@@ -30,12 +30,15 @@ jobs:
         env:
           COFFEE_ENVIRONMENT: ${{ vars.COFFEE_ENVIRONMENT }}
           COFFEE_DEBUG: ${{ vars.COFFEE_DEBUG }}
+          COFFEE_API_URL: ${{ vars.COFFEE_API_URL }}
+          COFFEE_SECRET_KEY: ${{ secrets.COFFEE_SECRET_KEY }}
           COFFEE_DATABASE__HOST: ${{ secrets.COFFEE_DATABASE__HOST }}
           COFFEE_DATABASE__PORT: ${{ secrets.COFFEE_DATABASE__PORT }}
           COFFEE_DATABASE__USER: ${{ secrets.COFFEE_DATABASE__USER }}
           COFFEE_DATABASE__DB: ${{ secrets.COFFEE_DATABASE__DB }}
           COFFEE_DATABASE__PASSWORD: ${{ secrets.COFFEE_DATABASE__PASSWORD }}
-          COFFEE_ANTHROPIC_API_KEY: ${{ secrets.COFFEE_ANTHROPIC_API_KEY }}
+          COFFEE_AI_PROVIDER__API_KEY: ${{ secrets.COFFEE_AI_PROVIDER__API_KEY }}
           COFFEE_RESEND_API_KEY: ${{ secrets.COFFEE_RESEND_API_KEY }}
-          COFFEE_FROM_EMAIL: ${{ secrets.COFFEE_FROM_EMAIL }}
+          COFFEE_FROM_EMAIL_NEWSLETTER: ${{ secrets.COFFEE_FROM_EMAIL_NEWSLETTER }}
+          COFFEE_FROM_EMAIL_WELCOME: ${{ secrets.COFFEE_FROM_EMAIL_WELCOME }}
         run: uv run python -m apps.newsletter_pipeline.main
