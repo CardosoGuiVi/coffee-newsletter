@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description"
-    content="Coado — curadoria semanal sobre o mundo dos cafés. Notícias, cultura, preparo e mercado direto na sua caixa de entrada.">
-  <title>Coado — Newsletter sobre Cafés</title>
+  <meta name="robots" content="noindex">
+  <meta name="description" content="Cancelar inscrição na newsletter do Coado.">
+  <title>Cancelar inscrição — Coado</title>
 
   <link rel="icon" href="/favicon/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
@@ -19,7 +19,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=Inter:wght@400;500&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="/styles/index.css">
+  <link rel="stylesheet" href="/styles/pages.css">
 </head>
 
 <body>
@@ -40,61 +40,38 @@
       </a>
     </header>
 
-    <main class="hero" id="main">
-
-      <p class="hero-label">Toda segunda-feira</p>
-
-      <h1 class="hero-headline">
-        O melhor do café,<br><em>filtrado</em> pra você
-      </h1>
-
-      <p class="hero-sub">
-        Notícias, cultura, preparo e mercado.<br>
-        Curadoria semanal na sua caixa de entrada.
+    <main class="form-page" id="main">
+      <p class="error-label">Newsletter</p>
+      <h1 class="error-headline">Cancelar <em>inscrição</em></h1>
+      <p class="error-sub">
+        Informe o e-mail que recebe a newsletter e ele será removido da lista.
+        Você pode voltar quando quiser.
       </p>
 
-      <form class="subscribe-form" id="subscribeForm" novalidate>
+      <form class="subscribe-form" id="unsubscribeForm" novalidate>
         <div id="formMessage" class="form-message" role="alert" aria-live="polite"></div>
         <div class="form-row">
           <input class="form-input" type="email" id="email" name="email" placeholder="seu@email.com"
             autocomplete="email" required aria-label="Seu endereço de e-mail">
           <button class="form-btn" type="submit" id="submitBtn">
-            Assinar grátis
+            Cancelar inscrição
           </button>
         </div>
-        <p class="form-note">Sem spam. Cancele quando quiser.</p>
+        <p class="form-note">Sem ressentimentos. ☕</p>
       </form>
     </main>
-
-    <div class="divider" role="separator"></div>
-
-    <section class="stats-section" aria-label="Estatísticas da newsletter">
-      <div class="stats-inner">
-        <div class="stat-item">
-          <span class="stat-number" id="totalSubscribers">—</span>
-          <span class="stat-label">leitores</span>
-        </div>
-        <div class="stat-sep" aria-hidden="true"></div>
-        <div class="stat-item">
-          <span class="stat-number" id="weekSubscribers">—</span>
-          <span class="stat-label">essa semana</span>
-        </div>
-      </div>
-    </section>
 
     <footer class="site-footer">
       <nav class="footer-nav" aria-label="Links do rodapé">
         <a href="/privacy">Privacidade</a>
         <a href="/terms">Termos</a>
       </nav>
-      <p class="footer-text">
-        &copy; 2026 Coado
-      </p>
+      <p class="footer-text">&copy; 2026 Coado</p>
     </footer>
 
   </div>
   <script src="/js/config.js"></script>
-  <script src="/js/index.js"></script>
+  <script src="/js/unsubscribe.js"></script>
 </body>
 
 </html>
