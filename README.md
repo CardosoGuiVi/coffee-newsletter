@@ -1,366 +1,117 @@
 <div align="center">
-  <img src="apps/web/images/logo-dark.svg" alt="Coffee Newsletter Logo" width="400"/>
+  <img src="apps/web/images/logo-dark.svg" alt="Coado Logo" width="400"/>
 </div>
 
-# ☕ Coado — Newsletter about Coffees
+# ☕ Coado
 
-An automated weekly newsletter about specialty coffee. Collects news from global RSS feeds, summarizes with Claude API, and sends to your audience via email.
+An automated weekly newsletter about coffee (PT-BR). It collects news from global
+RSS feeds, summarizes them with the Claude API, and delivers them by email.
 
-**Status:** Live on Railway · Weekly automation via GitHub Actions
+**Status:** 🟢 In production · Weekly automation via GitHub Actions
 
-🌐 **Live:** [coffee.guicardoso.dev.br](https://coffee.guicardoso.dev.br)
-
----
-
-## 📋 What It Is
-
-A fullstack project that combines:
-
-- **Signup website** — FastAPI → PostgreSQL subscription management
-- **Automation pipeline** — RSS scraper → Claude API → Resend email delivery
-- **Deployment** — Railway + Vercel + GitHub Actions
+🌐 **Live:** [coado.club](https://coado.club)
 
 ---
 
-## 🏗️ Architecture
+## What it is
 
-This project follows a **modular monolith** architecture using a monorepo-style structure.
+A fullstack project combining:
+
+- **Signup site + API** — a static frontend (Vercel) talking to a FastAPI service
+  (Railway) that manages subscriptions and exposes public stats.
+- **Automation pipeline** — RSS scraper → Claude API → Resend email delivery,
+  running weekly on GitHub Actions.
+
+It is deliberately built as something simple (a coffee newsletter) on top of a
+robust, modular architecture — the stack is where the learning happens.
+
+## Architecture in one breath
+
+A **modular monolith** in a monorepo: `apps/` holds thin entrypoints, `packages/`
+holds all reusable domain and infrastructure logic.
 
 ```
 coffee-newsletter/
-│
 ├── apps/
-│   ├── api/                          ← FastAPI web app (routes, schemas, dependencies)
-│   ├── web/                          ← Static frontend (HTML, CSS, JS, assets)
-│   │   └── images/
-│   │       └── logo-dark.svg
-│   └── newsletter_pipeline/          ← Pipeline entrypoint and orchestration
-│
+│   ├── api/                  ← FastAPI app (routes, schemas, dependencies)
+│   ├── web/                  ← Static frontend (hosted on Vercel)
+│   └── newsletter_pipeline/  ← Weekly pipeline entrypoint
 ├── packages/
-│   ├── ai/                           ← Claude API integration
-│   ├── core/                         ← Shared config (Pydantic Settings), constants
-│   ├── database/                     ← SQLAlchemy base, sessions, models, migrations
-│   ├── mailer/                       ← Mail provider abstractions (Resend, SES, etc.)
-│   ├── newsletter/                   ← Newsletter domain logic, schemas, templates
-│   │   └── templates/
-│   │       └── emails/
-│   │           ├── newsletter.html
-│   │           ├── newsletter_item.html
-│   │           └── welcome.html
-│   └── scraper/                      ← RSS feed collection and scraping logic
-│
-├── migrations/                       ← Alembic database versioning
-│   └── versions/
-│
-├── pyproject.toml                    ← Dependencies (uv)
-├── Makefile                          ← Useful commands
-├── compose.yaml                      ← Docker (PostgreSQL)
-├── railway.toml                      ← Deploy configuration
-└── alembic.ini                       ← Alembic config
+│   ├── ai/                   ← Claude API integration
+│   ├── core/                 ← Shared config (Pydantic Settings)
+│   ├── database/             ← SQLAlchemy base, sessions, models, repositories, Alembic migrations
+│   ├── mailer/               ← Mail provider abstractions (Resend, ...)
+│   ├── newsletter/           ← Newsletter domain logic, templates, prompts
+│   └── scraper/              ← RSS collection and scraping
+├── pyproject.toml            ← Dependencies (uv)
+├── Makefile · compose.yaml · railway.toml · alembic.ini
 ```
 
-### Layer Responsibilities
+📚 **Full documentation lives in [`docs/`](docs/README.md):**
 
-| Layer | Responsibility |
-|---|---|
-| `apps/` | Entrypoints only — wire dependencies, bootstrap services, expose routes |
-| `packages/newsletter` | Newsletter domain logic, campaign workflows, rendering, prompts |
-| `packages/database` | SQLAlchemy models, sessions, repositories, migrations |
-| `packages/mailer` | Mail provider abstractions and implementations |
-| `packages/ai` | AI provider integrations and LLM clients |
-| `packages/scraper` | RSS collection, source definitions, scraping logic |
-| `packages/core` | Shared configuration via Pydantic Settings |
+- [Architecture overview](docs/architecture/overview.md)
+- [Architecture decisions](docs/architecture/decisions.md) — why Railway, why no
+  agent frameworks, why a cron over a worker
+- [Packages](docs/architecture/packages.md)
+- [Getting started](docs/development/getting-started.md)
+- [Environment variables](docs/development/environment.md)
+- [Deployment](docs/infrastructure/deployment.md)
+- [Pipeline](docs/infrastructure/pipeline.md)
 
----
-
-## 🔄 Newsletter Pipeline
-
-### How it works
-
-```
-GitHub Actions (Monday, 8am UTC-3)
-  ↓
-apps/newsletter_pipeline/
-  ├── packages/scraper     → Collects RSS feeds (10+ coffee sources)
-  ├── packages/ai          → Claude API summarizes articles
-  ├── packages/newsletter  → Jinja2 renders email template
-  └── packages/mailer      → Resend sends to all subscribers
-```
-
-### RSS Sources
-
-**Brazilian:** Revista Espresso, CaféPoint, Tudo Sobre Café, Revista Cafeicultura, Blog do Café
-
-**International:** Perfect Daily Grind, Daily Coffee News, Sprudge, Fresh Cup, SCA News
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Python 3.12+
-- [uv](https://docs.astral.sh/uv/) for dependency management
-- Docker (optional, for running PostgreSQL locally)
-- [Make](https://www.gnu.org/software/make/) for simplified commands
-
-### 1. Clone and setup
+## Quick start
 
 ```bash
 git clone git@github.com:CardosoGuiVi/coffee-newsletter.git
 cd coffee-newsletter
-```
-
-### 2. Install dependencies
-
-```bash
 uv sync
+cp .env.example .env        # then edit with your credentials
+make fastapi-dev            # API at http://localhost:8000 (routes under /v1/)
 ```
 
-### 3. Configure environment variables
+To run the static frontend locally:
 
 ```bash
-cp .env.example .env
-# Edit .env with your credentials
+cd apps/web && python3 -m http.server 8080
 ```
 
-Required variables:
+See [getting started](docs/development/getting-started.md) for pointing the
+frontend at the local API.
 
-```env
-# Database
-COFFEE_DATABASE__HOST=localhost
-COFFEE_DATABASE__PORT=5432
-COFFEE_DATABASE__USER=local_user
-COFFEE_DATABASE__DB=local_db
-COFFEE_DATABASE__PASSWORD=local_password
+## Tech stack
 
-# Anthropic API
-COFFEE_ANTHROPIC_API_KEY=sk-ant-...
+| Area      | Tools                                                             |
+|-----------|------------------------------------------------------------------|
+| Language  | Python 3.12, uv                                                  |
+| Backend   | FastAPI, SQLAlchemy 2.0 async, asyncpg, Alembic, Pydantic v2     |
+| Email     | Resend, Jinja2 templates                                        |
+| AI        | Anthropic Claude API (`claude-haiku`)                            |
+| Frontend  | Vanilla HTML/CSS/JS                                              |
+| Infra     | Railway (API + PostgreSQL), Vercel (frontend), GitHub Actions   |
+| Local dev | Docker Compose (PostgreSQL), Makefile                           |
+| Quality   | ruff, mypy, pre-commit, Dependabot                              |
 
-# Resend Email
-COFFEE_RESEND_API_KEY=re_...
-COFFEE_FROM_EMAIL=newsletter@your-domain.com
-```
+## Deployment
 
-### 4. Run locally
+| Component | Platform       | Trigger                              |
+|-----------|----------------|--------------------------------------|
+| API       | Railway        | Deploy on merge to `main`            |
+| Frontend  | Vercel         | `main` → production, others → preview |
+| Pipeline  | GitHub Actions | Cron — Mondays at 11:00 UTC          |
 
-**Option A — With Docker (recommended)**
+The frontend reaches the API through a Vercel rewrite proxy (`/v1/*` → Railway),
+so the browser stays on one origin and there is no CORS to manage. Details in
+[deployment](docs/infrastructure/deployment.md).
 
-```bash
-make fastapi-dev
-```
+## Roadmap
 
-This executes:
-1. `docker compose up -d database` (PostgreSQL)
-2. Runs Alembic migrations automatically
-3. Starts FastAPI at `http://localhost:8000`
+See [`ROADMAP.md`](ROADMAP.md) for the current short-, medium-, and long-term
+plan. In short: tests and security hardening next, applied-AI topics (embeddings,
+RAG, vector DBs) further out.
 
-**Option B — Without Docker (requires external PostgreSQL)**
+## License
 
-```bash
-uv run --env-file .env fastapi dev
-```
+MIT — see [LICENSE](LICENSE).
 
 ---
 
-## 📊 Database
-
-### Migrations with Alembic
-
-```bash
-# Create a new migration
-uv run alembic revision --autogenerate -m "description of change"
-
-# Apply migrations
-uv run alembic upgrade head
-
-# Check current status
-uv run alembic current
-```
-
-### Current Schema
-
-```sql
-subscribers
-├── id (UUID)
-├── email (String, UNIQUE)
-├── subscribed (Boolean)
-├── created_at (DateTime)
-└── unsubscribed_at (DateTime, nullable)
-```
-
----
-
-## 🐳 Docker & Compose
-
-```bash
-# Start database
-make db-up
-
-# Stop database
-make db-down
-
-# View logs
-docker compose logs database
-```
-
----
-
-## 🚀 Deployment
-
-| Service | Target | Notes |
-|---|---|---|
-| API | Railway | Auto-deploys from GitHub, runs migrations on startup |
-| Web | Vercel | Static frontend |
-| Pipeline | GitHub Actions | Scheduled every Monday 8am UTC-3 |
-
-**Railway start command (`railway.toml`):**
-
-```toml
-[deploy]
-startCommand = "uv run fastapi run --port $PORT"
-```
-
-**Required environment variables in Railway:**
-- `DATABASE_URL` (auto-generated)
-- `ANTHROPIC_API_KEY`
-- `RESEND_API_KEY`
-- `FROM_EMAIL`
-- `SECRET_KEY`
-
----
-
-## ✅ Phase Status
-
-### Phase 1 — Signup Website ✅
-
-- [x] FastAPI app with REST endpoints
-- [x] PostgreSQL with Alembic migrations
-- [x] Responsive HTML frontend
-- [x] Email validation with Pydantic
-- [x] Deployed on Railway
-- [ ] Branding and UI/UX improvements
-
-### Phase 2 — Automation Pipeline ✅
-
-- [x] RSS scraper working
-- [x] Claude API integrated
-- [x] Email renderer with Jinja2
-- [x] Resend API integrated
-- [x] GitHub Actions scheduled (Monday 8am)
-- [x] First successful run!
-- [ ] Improve quality, add tests
-
-### Phase 3 — Refactor (In Progress)
-
-- [x] Migrated to modular monolith (monorepo-style)
-- [x] Separated domain logic from infrastructure
-- [x] Protocol-based abstractions for providers
-- [ ] Unit and integration tests
-- [ ] Rate limiting and security hardening
-
----
-
-## 🔐 Security
-
-### Implemented
-
-- [x] Environment variables via `.env`
-- [x] Email validation
-- [x] Database constraints
-- [x] SQL injection prevention (via SQLAlchemy ORM)
-
-### Planned
-
-- [ ] Rate limiting on endpoints
-- [ ] CSRF protection
-- [ ] Security headers
-- [ ] CORS review
-
----
-
-## 🧪 Tests (Planned)
-
-```
-tests/
-├── unit/
-│   ├── services/
-│   ├── repositories/
-│   └── schemas/
-├── integration/
-│   ├── test_endpoints.py
-│   └── test_pipeline.py
-└── conftest.py
-```
-
-Services are designed to be testable without FastAPI, using dependency injection and Protocol-based abstractions for provider swapping.
-
----
-
-## 🛠️ Useful Commands
-
-```bash
-# Install dependencies
-uv sync
-
-# Run app with hot-reload
-make fastapi-dev
-
-# Run pipeline manually
-uv run --env-file .env python apps/newsletter_pipeline/main.py
-
-# Lint
-uv run ruff check .
-
-# Type check
-uv run mypy .
-
-# Run tests (when available)
-uv run pytest
-```
-
----
-
-## 📈 Roadmap
-
-### Short term
-
-- [ ] UI/UX improvements on the web app
-- [ ] Unit and integration tests
-- [ ] Rate limiting
-
-### Medium term
-
-- [ ] Open/click statistics dashboard
-- [ ] Subject line A/B testing
-- [ ] Basic analytics
-
-### Long term
-
-- [ ] Multi-language support
-- [ ] Subscriber segments
-- [ ] Marketing tool integrations
-
----
-
-## 📚 References
-
-- [FastAPI](https://fastapi.tiangolo.com)
-- [SQLAlchemy](https://docs.sqlalchemy.org/20/)
-- [Alembic](https://alembic.sqlalchemy.org/)
-- [Pydantic](https://docs.pydantic.dev/)
-- [Anthropic API](https://docs.anthropic.com/)
-- [Resend](https://resend.com/docs)
-- [uv](https://docs.astral.sh/uv/)
-
----
-
-## 📝 License
-
-MIT — see [LICENSE](LICENSE)
-
----
-
-**Maintained by:** Guilherme Cardoso  
-**Last updated:** May 2026  
-**Status:** 🟢 In production
+**Maintained by:** Guilherme Cardoso
