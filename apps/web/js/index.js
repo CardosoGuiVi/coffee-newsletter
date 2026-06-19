@@ -10,7 +10,7 @@ setInterval(loadStats, 30000);
 
 async function loadStats() {
     try {
-        const res = await fetch('/v1/stats');
+        const res = await fetch(`${window.API_BASE ?? ''}/v1/stats`);
         if (res.ok) {
             const data = await res.json();
             animateCount(totalEl, data.total_subscribers);
@@ -47,7 +47,7 @@ form.addEventListener('submit', async (e) => {
     messageEl.textContent = '';
 
     try {
-        const res = await fetch('/v1/subscribe', {
+        const res = await fetch(`${window.API_BASE ?? ''}/v1/subscribe`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email }),
@@ -56,7 +56,7 @@ form.addEventListener('submit', async (e) => {
 
         if (res.ok) {
             messageEl.className = 'form-message success';
-            messageEl.textContent = data.message;
+            messageEl.textContent = 'Inscrição confirmada! Até segunda-feira. ☕';
             form.reset();
             loadStats();
             setTimeout(() => { messageEl.className = 'form-message'; messageEl.textContent = ''; }, 6000);
