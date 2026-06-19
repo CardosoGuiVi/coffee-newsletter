@@ -60,6 +60,29 @@ python3 -m http.server 8080
 
 Then open `http://localhost:8080`.
 
+### Pages and routes
+
+The frontend is a multi-page static site:
+
+| Route          | File                    | Notes                                            |
+|----------------|-------------------------|--------------------------------------------------|
+| `/`            | `index.html`            | Signup form + live stats                         |
+| `/unsubscribe` | `unsubscribe.html`      | Calls `POST /v1/unsubscribe`; accepts `?email=`  |
+| `/privacy`     | `privacy.html`          | Privacy policy                                    |
+| `/terms`       | `terms.html`            | Terms of service                                  |
+| 404 / 500      | `404.html` / `500.html` | Error pages                                       |
+
+On Vercel these resolve as clean URLs (`/privacy`, `/unsubscribe`, …).
+`python3 -m http.server` does **not** emulate Vercel's `cleanUrls`, so locally
+either open the `.html` files directly (e.g. `/privacy.html`) or run
+`npx vercel dev` for production-accurate routing (clean URLs, `404.html`
+fallback, and the `/v1` proxy).
+
+> Testing `/unsubscribe` end-to-end needs the API running and an existing
+> subscriber. Because the page is served cross-origin from the local API, add the
+> static origin to `COFFEE_CORS_ORIGINS` (e.g. `["http://localhost:8080"]`) in
+> your `.env`.
+
 ### Pointing the frontend at the local API
 
 In production, a Vercel rewrite proxies `/v1/*` to the Railway API, so the

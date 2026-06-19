@@ -47,7 +47,7 @@ coffee-newsletter/
 | Layer                  | Responsibility                                                        |
 |------------------------|----------------------------------------------------------------------|
 | `apps/api`             | FastAPI routes, dependencies, API schemas, HTTP concerns             |
-| `apps/web`             | Static frontend, served by Vercel                                    |
+| `apps/web`             | Static multi-page frontend (signup, unsubscribe, legal, error pages), served by Vercel |
 | `apps/newsletter_pipeline` | Orchestration entrypoint for the weekly run                     |
 | `packages/newsletter`  | Newsletter domain: campaign/subscription workflows, rendering, prompts |
 | `packages/database`    | SQLAlchemy models, sessions, repositories, migrations                |

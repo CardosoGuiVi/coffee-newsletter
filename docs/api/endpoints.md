@@ -68,6 +68,9 @@ Unsubscribes an email. Rate limit: **5/minute**.
 |--------|---------------------|-------------------|
 | `404`  | `SubscriberNotFound`| `Email not found.`|
 
+This is the endpoint behind the `/unsubscribe` web page (`apps/web/unsubscribe.html`),
+which also prefills the field from an `?email=` query parameter.
+
 ---
 
 ## `POST /v1/unsubscribe/one-click`

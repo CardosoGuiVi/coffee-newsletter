@@ -45,22 +45,33 @@ The two surfaces live on separate domains: `coado.club` is the public frontend
 is not user-facing — the browser only ever sees `coado.club`, and the rewrite
 proxy below forwards `/v1/*` to the API behind the scenes.
 
-### Rewrite proxy
+### Routing and the API proxy
 
-`vercel.json` proxies API calls to Railway so the browser only ever talks to the
-Vercel origin (no CORS):
+`apps/web` is a small multi-page static site. `vercel.json` configures the
+routing:
 
 ```json
 {
   "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
-    { "source": "/v1/(.*)", "destination": "https://coffee.guicardoso.dev.br/v1/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/v1/(.*)", "destination": "https://coffee.guicardoso.dev.br/v1/$1" }
   ]
 }
 ```
 
-The `/v1/` rule must come before the catch-all, or the catch-all swallows it.
+- **API proxy** — `/v1/*` is rewritten to the Railway API, so the browser only
+  ever talks to the Vercel origin (no CORS) and the frontend's `fetch` calls stay
+  relative.
+- **Clean URLs** — with `cleanUrls`, each page is served from its `.html` file
+  without the extension: `/` (`index.html`), `/privacy`, `/terms`, `/unsubscribe`.
+- **Errors** — unmatched paths fall back to Vercel's static `404.html`; `500.html`
+  covers server failures.
+
+There is intentionally **no** SPA catch-all rewrite to `/index.html` — that would
+swallow the other pages and prevent a real 404. See the
+[frontend pages](../development/getting-started.md#pages-and-routes) for the full
+route list.
 
 > **Preview note:** preview deployments proxy to the *same* production Railway
 > API (there is a single API environment). Be mindful when testing the signup
