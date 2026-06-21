@@ -4,9 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex">
-  <meta name="description" content="Cancelar inscrição na newsletter do Coado.">
-  <title>Cancelar inscrição — Coado</title>
+  <meta name="description" content="Sobre o Coado — o projeto, a stack e quem está por trás.">
+  <title>Sobre — Coado</title>
 
   <link rel="icon" href="/favicon/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
@@ -40,25 +39,41 @@
       </a>
     </header>
 
-    <main class="form-page" id="main">
-      <p class="error-label">Newsletter</p>
-      <h1 class="error-headline">Cancelar <em>inscrição</em></h1>
-      <p class="error-sub">
-        Informe o e-mail que recebe a newsletter e ele será removido da lista.
-        Você pode voltar quando quiser.
+    <main class="content" id="main">
+      <h1 class="content-title">Sobre</h1>
+
+      <h2>O projeto</h2>
+      <p>
+        O Coado é uma newsletter semanal sobre o mundo do café — notícias, cultura,
+        preparo e mercado. Todo conteúdo é coletado automaticamente de feeds RSS,
+        sumarizado pela API do Claude (Anthropic) e entregue por e-mail toda
+        segunda-feira.
+      </p>
+      <p>
+        É um projeto pessoal construído para ser simples por fora e robusto por dentro.
+        A stack combina FastAPI, PostgreSQL, Resend e GitHub Actions, hospedada no
+        Railway (API) e na Vercel (site).
       </p>
 
-      <form class="subscribe-form" id="unsubscribeForm" novalidate>
-        <div id="formMessage" class="form-message" role="alert" aria-live="polite"></div>
-        <div class="form-row">
-          <input class="form-input" type="email" id="email" name="email" placeholder="seu@email.com"
-            autocomplete="email" required aria-label="Seu endereço de e-mail">
-          <button class="form-btn" type="submit" id="submitBtn">
-            Cancelar inscrição
-          </button>
-        </div>
-        <p class="form-note">Sem ressentimentos. ☕</p>
-      </form>
+      <h2>Quem fez</h2>
+      <p>
+        Desenvolvido por <strong>Guilherme Cardoso</strong>, engenheiro de software
+        com interesse em sistemas backend, automação e em construir coisas que funcionam de verdade.
+      </p>
+
+      <h2>Links</h2>
+      <ul>
+        <li>
+          <a href="https://github.com/CardosoGuiVi/coffee-newsletter" target="_blank" rel="noopener noreferrer">
+            Repositório no GitHub
+          </a>
+        </li>
+        <li>
+          <a href="https://www.linkedin.com/in/gvcardoso/" target="_blank" rel="noopener noreferrer">
+            LinkedIn
+          </a>
+        </li>
+      </ul>
     </main>
 
     <footer class="site-footer">
@@ -71,8 +86,6 @@
     </footer>
 
   </div>
-  <script src="/js/config.js"></script>
-  <script src="/js/unsubscribe.js"></script>
 </body>
 
 </html>
