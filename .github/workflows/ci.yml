@@ -51,6 +51,8 @@ jobs:
           COFFEE_DATABASE__PORT: 5432
           COFFEE_DATABASE__USER: local_user
           COFFEE_DATABASE__PASSWORD: local_password
+          COFFEE_API_URL: ${{ vars.COFFEE_API_URL }}
+          COFFEE_BASE_URL: ${{ vars.COFFEE_BASE_URL }}
         run: uv run pytest --cov=packages --cov=apps --cov-report=xml -q
 
       - name: Upload coverage
