@@ -30,16 +30,20 @@ deliberate future step, not an oversight.
 They are wired together with a Vercel rewrite proxy.
 
 The browser only ever talks to the Vercel domain (`coado.club`). Requests to
-`/v1/*` are rewritten by Vercel to the Railway API host
-(`coffee.guicardoso.dev.br`) behind the scenes:
+`/v1/*` are rewritten by Vercel to the Railway API host (`api.coado.club`) behind
+the scenes:
 
 ```json
 {
   "rewrites": [
-    { "source": "/v1/(.*)", "destination": "https://coffee.guicardoso.dev.br/v1/$1" }
+    { "source": "/v1/(.*)", "destination": "https://api.coado.club/v1/$1" }
   ]
 }
 ```
+
+Because Vercel forwards the original `Host` header, `api.coado.club` must be
+listed in the API's `ALLOWED_HOSTS` (`TrustedHostMiddleware`) or requests are
+rejected with `400`.
 
 **Why:** This keeps everything under one origin from the browser's perspective,
 so normal frontend traffic never triggers a cross-origin request or a preflight.
@@ -86,15 +90,17 @@ surprise.
 **Decision:** All configuration lives in `packages/core/config.py` using Pydantic
 Settings, with provider-specific settings grouped behind a provider abstraction.
 
-**Why:** Centralizing config avoids duplication across the API and the pipeline,
-gives type-safe settings, and lets each provider's settings load from its own
-`env_prefix` (e.g. `ANTHROPIC_*`). Configuration is validated at startup rather
-than failing deep inside a request.
+**Why:** Centralizing config avoids duplication across the API and the pipeline
+and gives type-safe settings. Provider-specific settings are grouped into nested
+models (e.g. `AI_PROVIDER`, `DATABASE`) and loaded via the `COFFEE_` prefix with a
+`__` nested delimiter — so `COFFEE_AI_PROVIDER__API_KEY` and
+`COFFEE_DATABASE__HOST` map onto the right group. Configuration is validated at
+startup rather than failing deep inside a request.
 
-**Trade-off:** Nested `BaseSettings` classes lose their own env-loading behavior
-when embedded in a parent, so provider settings are instantiated independently
-to keep coupling low. This is a deliberate choice favoring independence over deep
-nesting.
+**Trade-off:** Nested models are plain `BaseModel`s populated through the parent's
+nested delimiter, not independent `BaseSettings` with their own `.env` loading.
+This keeps a single source of truth at the cost of every variable carrying the
+`COFFEE_` prefix.
 
 ## Cost-conscious defaults
 

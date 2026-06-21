@@ -67,9 +67,10 @@ The frontend is a multi-page static site:
 | Route          | File                    | Notes                                            |
 |----------------|-------------------------|--------------------------------------------------|
 | `/`            | `index.html`            | Signup form + live stats                         |
+| `/about`       | `about.html`            | About the project, stack, and author links       |
 | `/unsubscribe` | `unsubscribe.html`      | Calls `POST /v1/unsubscribe`; accepts `?email=`  |
 | `/privacy`     | `privacy.html`          | Privacy policy                                    |
-| `/terms`       | `terms.html`            | Terms of service                                  |
+| `/terms`       | `terms.html`            | Terms of service                                 |
 | 404 / 500      | `404.html` / `500.html` | Error pages                                       |
 
 On Vercel these resolve as clean URLs (`/privacy`, `/unsubscribe`, …).

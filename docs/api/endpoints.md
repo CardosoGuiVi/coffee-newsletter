@@ -9,7 +9,7 @@ reading public stats. All routes are served under the `/v1` prefix
 | Context    | Base                                         |
 |------------|----------------------------------------------|
 | Production | `https://coado.club/v1` (proxied to the API) |
-| API host   | `https://coffee.guicardoso.dev.br/v1`        |
+| API host   | `https://api.coado.club/v1`                  |
 | Local      | `http://localhost:8000/v1`                   |
 
 Rate limits are applied per client IP (`slowapi`, keyed on the remote address).

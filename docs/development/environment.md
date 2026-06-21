@@ -58,15 +58,21 @@ Used by `packages/mailer` to deliver the newsletter and welcome emails.
 COFFEE_SECRET_KEY=...               # required — signs one-click unsubscribe tokens (HMAC-SHA256)
 COFFEE_ENVIRONMENT=development       # any value other than "development" enables the security headers
 COFFEE_DEBUG=false
-COFFEE_API_URL=https://coffee.guicardoso.dev.br
+COFFEE_API_URL=https://api.coado.club    # required — the API host (used to build unsubscribe links)
+COFFEE_BASE_URL=https://coado.club       # required — the public site, shown in emails
 ```
 
-`ALLOWED_HOSTS` and `CORS_ORIGINS` ship with working defaults; override them with
-a JSON array when needed:
+Both `COFFEE_API_URL` and `COFFEE_BASE_URL` are **required** (no defaults). Locally
+they typically point at `http://localhost:8000` and `http://localhost:8080`.
+
+`ALLOWED_HOSTS` and `CORS_ORIGINS` ship with working defaults
+(`["localhost","127.0.0.1"]`); override them with a JSON array when needed. The
+API host must be listed in `ALLOWED_HOSTS`, because Vercel forwards the original
+`Host` header to Railway:
 
 ```env
-COFFEE_ALLOWED_HOSTS=["coffee.guicardoso.dev.br","localhost","127.0.0.1"]
-COFFEE_CORS_ORIGINS=["https://coffee.guicardoso.dev.br"]
+COFFEE_ALLOWED_HOSTS=["api.coado.club","coado.club","www.coado.club","localhost","127.0.0.1"]
+COFFEE_CORS_ORIGINS=["https://coado.club","https://www.coado.club"]
 ```
 
 ## Production — API (Railway)
@@ -83,6 +89,10 @@ Railway's PostgreSQL connection values go into those:
 - `COFFEE_FROM_EMAIL_NEWSLETTER`, `COFFEE_FROM_EMAIL_WELCOME`
 - `COFFEE_SECRET_KEY`
 - `COFFEE_ENVIRONMENT=production`
+- `COFFEE_API_URL=https://api.coado.club`, `COFFEE_BASE_URL=https://coado.club`
+- `COFFEE_ALLOWED_HOSTS` — must include `api.coado.club` (the Host header Vercel
+  forwards), plus `coado.club` and `www.coado.club`
+- `COFFEE_CORS_ORIGINS` — `https://coado.club`, `https://www.coado.club`
 
 ## Production — pipeline (GitHub Actions)
 
