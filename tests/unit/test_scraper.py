@@ -3,15 +3,8 @@
 These tests are fully synchronous and make no network calls — feedparser
 accepts raw XML strings as well as URLs, so we feed it the fixture file.
 
-Known bug in is_recent():
-  published = datetime(*entry.published_parsed[:6])  # naive datetime
-  published.astimezone(UTC)                           # return value discarded!
-  return published >= datetime.now(UTC) - ...         # naive vs aware → TypeError
-
-When an entry has a pubDate, the naive/aware comparison raises TypeError.
-parse_feed's broad `except Exception` catches it silently and returns [].
-The fixture intentionally omits pubDate to isolate parsing behaviour from
-the date-filtering bug. A separate test documents the bug explicitly.
+The fixture omits pubDate on entries so they are always treated as recent,
+making the happy-path tests independent of when they run.
 """
 
 from pathlib import Path
@@ -63,16 +56,8 @@ class TestParseFeed:
         # rather than raising — either way, we get no articles.
         assert articles == [] or all(not a.url for a in articles)
 
-    def test_pubdate_entries_trigger_is_recent_bug(self) -> None:
-        """Entries with pubDate cause is_recent() to raise TypeError (naive vs
-        aware datetime comparison). parse_feed catches it and returns [].
-
-        BUG: is_recent() discards the return value of .astimezone(UTC):
-          published = datetime(*entry.published_parsed[:6])  # naive
-          published.astimezone(UTC)  # ← return value thrown away
-          return published >= datetime.now(UTC)  # TypeError
-        Fix: published = published.replace(tzinfo=UTC)
-        """
+    def test_recent_pubdate_entry_is_included(self) -> None:
+        """Entries with a pubDate within the last 7 days are included."""
         xml_with_date = """<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
@@ -86,7 +71,4 @@ class TestParseFeed:
 
         articles = parse_feed("Test Source", xml_with_date)
 
-        # Due to the bug, parse_feed returns [] when entries have dates.
-        # Once the bug is fixed (replace TypeError with correct comparison),
-        # this assertion should change to: assert len(articles) == 1
-        assert articles == []
+        assert len(articles) == 1

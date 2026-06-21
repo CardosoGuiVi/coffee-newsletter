@@ -13,8 +13,9 @@ def is_recent(entry) -> bool:
     if not hasattr(entry, "published_parsed") or not entry.published_parsed:
         return True
     published = datetime(*entry.published_parsed[:6])
-    published.astimezone(UTC)
-    return published >= datetime.now(UTC) - timedelta(days=DAYS_BACK)
+    return published.replace(tzinfo=UTC) >= datetime.now(UTC) - timedelta(
+        days=DAYS_BACK
+    )
 
 
 def parse_feed(source_name: str, feed_url: str) -> list[Article]:
