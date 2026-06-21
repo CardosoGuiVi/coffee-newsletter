@@ -125,14 +125,13 @@ class TestSendNewsletter:
         assert "token=" in url
         assert "email=reader@example.com" in url
 
-    async def test_aborts_when_no_articles(
+    async def test_raises_when_no_articles(
         self,
         db_session: AsyncSession,
         fake_mailer: FakeMailer,
         monkeypatch,
     ) -> None:
-        """If scraping returns nothing, the pipeline stops before calling the AI
-        or the mailer — no wasted API calls."""
+        """Empty scrape result raises RuntimeError so the workflow exits non-zero."""
 
         async def empty_scrape():
             return []
@@ -144,17 +143,15 @@ class TestSendNewsletter:
         db_session.add(Subscriber(email="sub@example.com", subscribed=True))
         await db_session.flush()
 
-        await make_campaign_service(db_session, fake_mailer).send_newsletter()
+        with pytest.raises(RuntimeError, match="No articles found"):
+            await make_campaign_service(db_session, fake_mailer).send_newsletter()
 
-        assert fake_mailer.sent_emails == []
-
-    async def test_aborts_when_no_active_subscribers(
+    async def test_raises_when_no_active_subscribers(
         self,
         db_session: AsyncSession,
         fake_mailer: FakeMailer,
         patched_pipeline,
     ) -> None:
-        """No active subscribers → no emails sent, no error raised."""
-        await make_campaign_service(db_session, fake_mailer).send_newsletter()
-
-        assert fake_mailer.sent_emails == []
+        """No active subscribers raises RuntimeError so the workflow exits non-zero."""
+        with pytest.raises(RuntimeError, match="No active subscribers"):
+            await make_campaign_service(db_session, fake_mailer).send_newsletter()
