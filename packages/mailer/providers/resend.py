@@ -40,10 +40,6 @@ class ResendMailer:
             "to": [email],
             "subject": "☕ Bem-vindo. Seu café está quase pronto.",
             "html": html,
-            "headers": {
-                "List-Unsubscribe": f"<{settings.API_URL}/unsubscribe>",
-                "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-            },
         }
 
         try:
