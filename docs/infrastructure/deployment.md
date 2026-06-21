@@ -41,9 +41,9 @@ The domain `coado.club` is managed through Vercel's nameservers, with Vercel
 issuing SSL automatically.
 
 The two surfaces live on separate domains: `coado.club` is the public frontend
-(Vercel), and `coffee.guicardoso.dev.br` is the Railway API host. The API domain
-is not user-facing — the browser only ever sees `coado.club`, and the rewrite
-proxy below forwards `/v1/*` to the API behind the scenes.
+(Vercel), and `api.coado.club` is the Railway API host. The API domain is not
+user-facing — the browser only ever sees `coado.club`, and the rewrite proxy
+below forwards `/v1/*` to the API behind the scenes.
 
 ### Routing and the API proxy
 
@@ -55,7 +55,7 @@ routing:
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/v1/(.*)", "destination": "https://coffee.guicardoso.dev.br/v1/$1" }
+    { "source": "/v1/(.*)", "destination": "https://api.coado.club/v1/$1" }
   ]
 }
 ```
@@ -64,7 +64,8 @@ routing:
   ever talks to the Vercel origin (no CORS) and the frontend's `fetch` calls stay
   relative.
 - **Clean URLs** — with `cleanUrls`, each page is served from its `.html` file
-  without the extension: `/` (`index.html`), `/privacy`, `/terms`, `/unsubscribe`.
+  without the extension: `/` (`index.html`), `/about`, `/privacy`, `/terms`,
+  `/unsubscribe`.
 - **Errors** — unmatched paths fall back to Vercel's static `404.html`; `500.html`
   covers server failures.
 
@@ -86,6 +87,16 @@ credentials come from repository Actions secrets. See
 
 ## CI
 
-Beyond the scheduled job, GitHub Actions also handles continuous integration
-(linting, type checks) and release automation. Dependabot keeps dependencies
-current.
+Beyond the scheduled job, GitHub Actions also handles continuous integration.
+On every push and pull request to `main` and `development`, the CI workflow
+(`.github/workflows/ci.yml`) spins up a PostgreSQL service container and runs the
+full test suite with coverage:
+
+```bash
+uv run pytest --cov=packages --cov=apps --cov-report=xml --cov-report=term-missing -q
+```
+
+Coverage is uploaded to Codecov and posted as a comment on pull requests
+(`MishaKav/pytest-coverage-comment`). Linting and type checks (ruff, mypy) run via
+pre-commit, release automation handles versioning, and Dependabot keeps
+dependencies current.
