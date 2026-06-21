@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+    branches: [main, development]
+
+jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          # Must match the credentials the conftest uses to connect.
+          # POSTGRES_USER becomes the Postgres superuser, so it can CREATE DATABASE test_db.
+          POSTGRES_USER: local_user
+          POSTGRES_PASSWORD: local_password
+          POSTGRES_DB: local_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Run tests
+        env:
+          # conftest.py reads these via os.getenv() and hardcodes COFFEE_DATABASE__DB=test_db.
+          # The superuser credentials are needed so the engine fixture can run CREATE DATABASE.
+          COFFEE_DATABASE__HOST: localhost
+          COFFEE_DATABASE__PORT: 5432
+          COFFEE_DATABASE__USER: local_user
+          COFFEE_DATABASE__PASSWORD: local_password
+        run: uv run pytest --cov=packages --cov=apps --cov-report=xml -q
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v5
+        if: always()
+        with:
+          files: coverage.xml
+          fail_ci_if_error: false
