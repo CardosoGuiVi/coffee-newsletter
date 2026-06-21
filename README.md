@@ -1,20 +1,16 @@
 <div align="center">
   <img src="apps/web/images/logo-dark.svg" alt="Coado Logo" width="400"/>
+
+  <p>An automated weekly newsletter about coffee (PT-BR). It collects news from global RSS feeds, summarizes them with the Claude API, and delivers them by email.</p>
+
+  ![CI](https://github.com/CardosoGuiVi/coffee-newsletter/actions/workflows/ci.yml/badge.svg)
+  [![codecov](https://codecov.io/gh/CardosoGuiVi/coffee-newsletter/graph/badge.svg)](https://codecov.io/gh/CardosoGuiVi/coffee-newsletter)
+  [![Vercel](https://img.shields.io/badge/Vercel-deployed-000000?logo=vercel&logoColor=white)](https://coado.club)
+  ![Railway](https://img.shields.io/badge/Railway-deployed-6742f5?logo=railway&logoColor=white)
+
 </div>
 
 # ☕ Coado
-
-<div align="center">
-
-![CI](https://github.com/CardosoGuiVi/coffee-newsletter/actions/workflows/ci.yml/badge.svg)
-[![codecov](https://codecov.io/gh/CardosoGuiVi/coffee-newsletter/graph/badge.svg)](https://codecov.io/gh/CardosoGuiVi/coffee-newsletter)
-[![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=coffee-newsletter)](https://coado.club)
-![Railway](https://img.shields.io/badge/Railway-deployed-6742f5?logo=railway&logoColor=white)
-
-</div>
-
-An automated weekly newsletter about coffee (PT-BR). It collects news from global
-RSS feeds, summarizes them with the Claude API, and delivers them by email.
 
 **Status:** 🟢 In production · Weekly automation via GitHub Actions
 
