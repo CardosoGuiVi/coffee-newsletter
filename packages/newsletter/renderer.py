@@ -19,13 +19,12 @@ def render_newsletter(newsletter: Newsletter) -> str:
     template = env.get_template("newsletter.html")
 
     return template.render(
-        url_api=settings.API_URL,
+        url_api=settings.BASE_URL,
         week_label=newsletter.week_label,
         intro=newsletter.intro,
         items=newsletter.items,
         closing=newsletter.closing,
-        refer_url=settings.API_URL,
-        unsubscribe_url=f"{settings.API_URL}/unsubscribe",
+        unsubscribe_url=f"{settings.BASE_URL}/unsubscribe",
     )
 
 
