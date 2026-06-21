@@ -4,6 +4,15 @@
 
 # ☕ Coado
 
+<div align="center">
+
+![CI](https://github.com/CardosoGuiVi/coffee-newsletter/actions/workflows/ci.yml/badge.svg)
+[![codecov](https://codecov.io/gh/CardosoGuiVi/coffee-newsletter/graph/badge.svg)](https://codecov.io/gh/CardosoGuiVi/coffee-newsletter)
+[![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=coffee-newsletter)](https://coado.club)
+![Railway](https://img.shields.io/badge/Railway-deployed-6742f5?logo=railway&logoColor=white)
+
+</div>
+
 An automated weekly newsletter about coffee (PT-BR). It collects news from global
 RSS feeds, summarizes them with the Claude API, and delivers them by email.
 

@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main, development]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   test:
     name: Tests
@@ -53,11 +57,19 @@ jobs:
           COFFEE_DATABASE__PASSWORD: local_password
           COFFEE_API_URL: ${{ vars.COFFEE_API_URL }}
           COFFEE_BASE_URL: ${{ vars.COFFEE_BASE_URL }}
-        run: uv run pytest --cov=packages --cov=apps --cov-report=xml -q
+        run: uv run pytest --cov=packages --cov=apps --cov-report=xml --cov-report=term-missing -q
 
-      - name: Upload coverage
+      - name: Coverage comment on PR
+        uses: MishaKav/pytest-coverage-comment@main
+        if: github.event_name == 'pull_request'
+        with:
+          pytest-xml-coverage-path: coverage.xml
+          title: Coverage Report
+
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         if: always()
         with:
           files: coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
