@@ -6,7 +6,7 @@ class PromptTemplate:
     articles_text: str
 
 
-PROMPT: str = """Você é o editor de uma newsletter semanal chamada "Café & Novidades".
+PROMPT: str = """Você é o editor de uma newsletter semanal chamado "Coado" (coado.club).
 Seu público são entusiastas de café especial brasileiros — curiosos, cultos, apaixonados pela bebida.
 
 Abaixo estão artigos coletados de sites especializados em café nesta semana.
