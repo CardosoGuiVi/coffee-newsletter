@@ -34,8 +34,6 @@ os.environ.update(
 )
 
 # App imports happen AFTER the env vars are set above.
-import uuid
-
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
@@ -145,7 +143,7 @@ def fake_mailer() -> FakeMailer:
 
 
 @pytest_asyncio.fixture
-async def client(db_session: AsyncSession, fake_mailer: FakeMailer) -> AsyncClient:
+async def client(db_session: AsyncSession, fake_mailer: FakeMailer):
     """AsyncClient wired to the FastAPI app with two dependency overrides:
 
     1. get_subscription_service → injects the test db_session and FakeMailer,
@@ -186,15 +184,17 @@ async def client(db_session: AsyncSession, fake_mailer: FakeMailer) -> AsyncClie
 
 
 @pytest.fixture(autouse=True)
-def isolate_rate_limits(monkeypatch):
-    """Give each test its own rate-limit bucket.
+def reset_rate_limiter():
+    """Clear all rate-limit counters before every test.
 
-    slowapi uses the client IP as the bucket key (get_remote_address). All test
-    requests share the same fake IP, so without this fixture the 6th POST to a
-    5/minute endpoint would get a spurious 429. Using a unique key per test
-    keeps rate-limit state from leaking between tests.
+    The @limiter.limit() decorator captures limiter._key_func at decoration
+    time (import time), so patching _key_func at test time has no effect on
+    already-decorated routes. The reliable fix is to reset the in-memory
+    storage directly: limiter.reset() delegates to MemoryStorage.reset(),
+    wiping all per-key counters so no test ever inherits another's counts.
     """
     from apps.api.security.limiter import limiter
 
-    unique_key = uuid.uuid4().hex
-    monkeypatch.setattr(limiter, "_key_func", lambda _request: unique_key)
+    limiter.reset()
+    yield
+    limiter.reset()
