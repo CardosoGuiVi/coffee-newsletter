@@ -13,7 +13,7 @@ ARTIFACTS_DIR = BASE_DIR.parent / "artifacts"
 NEWSLETTER_PATH = ARTIFACTS_DIR / "newsletter.json"
 
 
-DOMAIN: str = "https://coffee.guicardoso.dev.br"
+DOMAIN: str = "https://api.coado.club"
 TEST_EMAIL = "cardoso.guivi@gmail.com"
 
 
