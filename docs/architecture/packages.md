@@ -8,8 +8,9 @@ implementations where it crosses a boundary.
 
 Shared configuration and constants. Centralizes all settings via Pydantic
 Settings in `config.py`, so both the API and the pipeline read from one source of
-truth. Provider-specific settings load from their own `env_prefix` (for example
-`ANTHROPIC_*`).
+truth. Provider-specific settings are grouped into nested models (e.g.
+`AI_PROVIDER`, `DATABASE`) loaded through the `COFFEE_` prefix and a `__` nested
+delimiter (for example `COFFEE_AI_PROVIDER__API_KEY`).
 
 Avoid duplicating configuration in the apps — they import from here.
 
