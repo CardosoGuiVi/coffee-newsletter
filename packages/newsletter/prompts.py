@@ -30,7 +30,7 @@ Formato exato:
       "summary": "resumo em português aqui"
     }}
   ],
-  "closing": "parágrafo de encerramento aqui"
+  "closing": "parágrafo de encerramento aqui, não adicionar emotions aqui"
 }}
 
 Artigos desta semana:
