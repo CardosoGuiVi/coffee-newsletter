@@ -1,9 +1,6 @@
-from pathlib import Path
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
@@ -12,11 +9,6 @@ from apps.api.routes.v1 import health, newsletter
 from apps.api.security import limiter
 from apps.api.security.middleware import SecurityHeadersMiddleware
 from packages.core import settings
-
-BASE_DIR = Path(__file__).resolve().parent
-STATIC_DIR = BASE_DIR.parent / "web"
-IMAGES_DIR = STATIC_DIR / "images"
-
 
 app = FastAPI(
     title="Coado",
@@ -42,5 +34,3 @@ app.add_middleware(SlowAPIMiddleware)
 
 app.include_router(health.router, prefix="/v1")
 app.include_router(newsletter.router, prefix="/v1")
-
-app.mount("/images", StaticFiles(directory=str(IMAGES_DIR)), name="images")
