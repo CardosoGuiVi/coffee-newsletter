@@ -32,4 +32,4 @@ def render_newsletter(newsletter: Newsletter) -> str:
 def render_welcome(name: str | None = None) -> str:
     template = env.get_template("welcome.html")
 
-    return template.render(url_api=settings.API_URL)
+    return template.render(url_api=settings.API_URL, url_web=settings.BASE_URL)

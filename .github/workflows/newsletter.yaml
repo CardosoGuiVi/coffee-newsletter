@@ -31,6 +31,7 @@ jobs:
           COFFEE_ENVIRONMENT: ${{ vars.COFFEE_ENVIRONMENT }}
           COFFEE_DEBUG: ${{ vars.COFFEE_DEBUG }}
           COFFEE_API_URL: ${{ vars.COFFEE_API_URL }}
+          COFFEE_BASE_URL: ${{ vars.COFFEE_BASE_URL }}
           COFFEE_SECRET_KEY: ${{ secrets.COFFEE_SECRET_KEY }}
           COFFEE_DATABASE__HOST: ${{ secrets.COFFEE_DATABASE__HOST }}
           COFFEE_DATABASE__PORT: ${{ secrets.COFFEE_DATABASE__PORT }}
