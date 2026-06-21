@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Test Coffee Feed</title>
+    <link>https://example.com</link>
+    <description>A minimal RSS fixture for scraper unit tests.</description>
+
+    <!-- No pubDate on entries: is_recent() returns True when there is no date,
+         so these are always "recent" regardless of when the test runs.
+         See test_scraper.py for notes on the is_recent() timezone bug. -->
+
+    <item>
+      <title>How to brew perfect espresso</title>
+      <link>https://example.com/espresso-guide</link>
+      <description>A complete guide to extracting the ideal espresso shot, from grind size to pressure.</description>
+    </item>
+
+    <item>
+      <title>Ethiopian Yirgacheffe: Tasting Notes</title>
+      <link>https://example.com/yirgacheffe</link>
+      <description>Floral, bright, and complex — tasting notes from this Ethiopian single-origin gem.</description>
+    </item>
+  </channel>
+</rss>

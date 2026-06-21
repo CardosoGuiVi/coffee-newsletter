@@ -61,6 +61,15 @@ ignore = [
     "E501", # line too long — deixa o formatter cuidar
 ]
 
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+# All async fixtures share one session-scoped event loop, so the session-scoped
+# engine and function-scoped db_session fixtures can share the same connections.
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+testpaths = ["tests"]
+pythonpath = ["."]
+
 [tool.mypy]
 python_version = "3.12"
 strict = false
