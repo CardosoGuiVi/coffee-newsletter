@@ -2,6 +2,6 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/v1/(.*)", "destination": "https://coffee.guicardoso.dev.br/v1/$1" }
+    { "source": "/v1/(.*)", "destination": "https://api.coado.club/v1/$1" }
   ]
 }

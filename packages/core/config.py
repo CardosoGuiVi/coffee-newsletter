@@ -22,7 +22,8 @@ class Settings(BaseSettings):
     APP_NAME: str = "Coado"
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
-    API_URL: str = Field(default="https://coffee.guicardoso.dev.br")
+    BASE_URL: str
+    API_URL: str
     SECRET_KEY: str
 
     # Providers
@@ -32,10 +33,8 @@ class Settings(BaseSettings):
     FROM_EMAIL_WELCOME: str
 
     # Security
-    ALLOWED_HOSTS: list[str] = Field(
-        default=["coffee.guicardoso.dev.br", "localhost", "127.0.0.1"]
-    )
-    CORS_ORIGINS: list[str] = Field(default=["https://coffee.guicardoso.dev.br"])
+    ALLOWED_HOSTS: list[str] = Field(default=["localhost", "127.0.0.1"])
+    CORS_ORIGINS: list[str] = Field(default=["localhost", "127.0.0.1"])
 
 
 settings = Settings()
