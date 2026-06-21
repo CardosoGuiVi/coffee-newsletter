@@ -26,8 +26,7 @@ class CampaignService:
     async def send_newsletter(self):
         articles = await scrape_articles()
         if not articles:
-            logger.warning("No articles found. Aborting.")
-            return
+            raise RuntimeError("No articles found — scraper returned empty.")
 
         newsletter = await summarize_articles(articles)
 
@@ -36,8 +35,7 @@ class CampaignService:
         subscribers = await self.subscriber_repository.list_active_subscribers()
 
         if not subscribers:
-            logger.warning("No active subscribers found.")
-            return
+            raise RuntimeError("No active subscribers found.")
 
         for subscriber in subscribers:
             token = generate_unsubscribe_token(subscriber.email)
