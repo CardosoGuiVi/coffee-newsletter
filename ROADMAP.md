@@ -33,24 +33,20 @@ done, in progress, and planned.
 - Domain logic separated from infrastructure
 - Protocol-based abstractions for providers (mailer, AI)
 - Pydantic Settings provider abstraction layer (`packages/core/config.py`)
+- AI provider abstraction with Anthropic implementation (`packages/ai/providers/`)
 - ruff, mypy, pre-commit, Dependabot
 - Technical documentation under `docs/`
-- Unit tests for `SubscriptionService` (`tests/unit/services/`)
+- Branding refinement (tagline, visual polish)
 
-## 🚧 In progress
-
-- **AI provider abstraction refactor** (`refactor/configs`) — finishing the
-  Pydantic Settings provider layer and merging into `dev`
-- **Testing** — unit tests for services done; integration tests for endpoints
-  still pending
-- **Branding refinement** — minor polish; reconsidering the tagline so it doesn't
-  box in future brand evolution
+### Testing
+- Unit tests: services (`SubscriptionService`, `NewsletterService`), schemas, scraper
+- Integration tests: subscribe, unsubscribe, stats endpoints
+- Fakes: `FakeMailer`, `FakeAI` for isolated testing
+- CI running tests on GitHub Actions
 
 ## 🎯 Planned
 
 ### Short term
-- Test suite with meaningful coverage (services 80%+, endpoints 70%+)
-- CI running tests on GitHub Actions
 - Periodic security review (audit headers/CORS config, dependencies, secrets)
 - **Repository bug fixes** (identified in code review):
   - `soft_delete()` incorrectly overwrites `created_at`, corrupting original join
@@ -111,26 +107,26 @@ Ordered steps — each is independent and does not require the next to be done f
 - Multi-language support
 - Route 53 for DNS consolidation (migrate `coado.club` DNS into AWS)
 
-## 🧪 Testing plan
+## 🧪 Testing
 
 ```
 tests/
-├── conftest.py                          ← shared fixtures (done)
+├── conftest.py
+├── fakes/
+│   ├── fake_mailer.py
+│   └── fake_ai.py
+├── fixtures/
+│   └── sample_feed.xml
 ├── unit/
-│   ├── models/
-│   ├── schemas/
+│   ├── test_schemas.py
+│   ├── test_scraper.py
 │   └── services/
-│       └── test_subscription_service.py ← done
+│       ├── test_subscriber_service.py
+│       └── test_newsletter_service.py
 └── integration/
-    ├── test_endpoints.py
-    └── test_pipeline.py
-```
-
-Setup:
-
-```bash
-uv add --group dev pytest pytest-asyncio pytest-cov httpx
-uv run pytest --cov
+    ├── test_subscribe_endpoint.py
+    ├── test_unsubscribe_endpoint.py
+    └── test_stats_endpoint.py
 ```
 
 ## 🧭 Study direction
