@@ -7,6 +7,8 @@ The fixture omits pubDate on entries so they are always treated as recent,
 making the happy-path tests independent of when they run.
 """
 
+from datetime import UTC, datetime, timedelta
+from email.utils import format_datetime
 from pathlib import Path
 
 from packages.scraper.rss import parse_feed
@@ -58,13 +60,14 @@ class TestParseFeed:
 
     def test_recent_pubdate_entry_is_included(self) -> None:
         """Entries with a pubDate within the last 7 days are included."""
-        xml_with_date = """<?xml version="1.0" encoding="UTF-8"?>
+        three_days_ago = format_datetime(datetime.now(UTC) - timedelta(days=3))
+        xml_with_date = f"""<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
     <item>
       <title>Dated Article</title>
       <link>https://example.com/dated</link>
-      <pubDate>Mon, 16 Jun 2026 10:00:00 +0000</pubDate>
+      <pubDate>{three_days_ago}</pubDate>
     </item>
   </channel>
 </rss>"""
