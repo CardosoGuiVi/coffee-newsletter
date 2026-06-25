@@ -74,18 +74,20 @@ Ordered steps — each is independent and does not require the next to be done f
 - Zero code changes required
 
 **Step 2 — Migrate API to AWS Lambda** *(medium effort)*
+- Define infrastructure in `template.yaml` (AWS SAM)
 - Add Mangum adapter (`handler = Mangum(app)`) to `apps/api/main.py`
-- Package and deploy Lambda function
-- Expose via Lambda Function URL (no API Gateway needed initially)
+- `sam build && sam deploy` via GitHub Actions (`aws-actions/configure-aws-credentials`)
+- Expose via Lambda Function URL initially (no API Gateway needed yet)
 - Update `vercel.json` rewrite destination to the Function URL
 - Neon's built-in connection pooler handles Lambda's stateless connections
-- Update `deploy.yaml` GitHub Actions workflow (replace Railway CLI with AWS CLI)
+- Replace `deploy.yaml` Railway deploy with SAM deploy step
+- CI (tests, lint) stays on GitHub Actions unchanged
 
 **Step 3 — Migrate newsletter pipeline to AWS Lambda + EventBridge** *(medium effort)*
-- Package `apps/newsletter_pipeline/main` as a separate Lambda function
-- Create EventBridge Scheduler rule (replaces GitHub Actions cron)
+- Add pipeline Lambda function to `template.yaml` (SAM)
+- Create EventBridge Scheduler rule in SAM template (replaces GitHub Actions cron)
 - Reliable, exact-time scheduling — no more peak-hour queue delays
-- Remove `newsletter.yaml` GitHub Actions workflow (or repurpose it for Lambda deploy)
+- `newsletter.yaml` GitHub Actions workflow becomes the Lambda deploy step only
 
 **Step 4 — Custom domain with API Gateway HTTP API** *(low effort, when needed)*
 - Replace Lambda Function URL with API Gateway HTTP API
@@ -106,6 +108,9 @@ Ordered steps — each is independent and does not require the next to be done f
 - Subscriber segments
 - Multi-language support
 - Route 53 for DNS consolidation (migrate `coado.club` DNS into AWS)
+- Frontend: Vercel stays as-is — free, zero ops, already decoupled via rewrite proxy.
+  If full AWS consolidation becomes a goal, Amplify Hosting is the natural choice
+  (replaces `vercel.json` rewrites natively; user has experience with Amplify since v1)
 
 ## 🧪 Testing
 
