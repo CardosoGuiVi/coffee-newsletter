@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from mangum import Mangum
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
@@ -34,3 +35,5 @@ app.add_middleware(SlowAPIMiddleware)
 
 app.include_router(health.router, prefix="/v1")
 app.include_router(newsletter.router, prefix="/v1")
+
+handler = Mangum(app, lifespan="off")
