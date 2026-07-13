@@ -2,6 +2,6 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/v1/(.*)", "destination": "https://api.coado.club/v1/$1" }
+    { "source": "/v1/(.*)", "destination": "https://rwkpejfc3ynbif3u6dhsdhg2we0vpapa.lambda-url.sa-east-1.on.aws/v1/$1" }
   ]
 }
