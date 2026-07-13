@@ -21,6 +21,7 @@ dependencies = [
     "jinja2>=3.1.6",
     "fastapi-csrf-protect>=1.0.7",
     "slowapi>=0.1.10",
+    "mangum>=0.21.0",
 ]
 
 [tool.fastapi]
@@ -43,7 +44,8 @@ target-version = "py312"
 exclude = [
     ".venv",
     "packages/database/migrations",
-    "__pycache__"
+    "__pycache__",
+    ".aws-sam",
 ]
 
 [tool.ruff.lint]
@@ -80,6 +82,7 @@ explicit_package_bases = true
 exclude = [
     "packages/database/migrations",
     "apps/web",
+    ".aws-sam",
 ]
 plugins = [
     "pydantic.mypy",
