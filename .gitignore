@@ -30,3 +30,4 @@ temp_*
 **/artifacts
 /tmp/sam_params.yaml
 lambda-layer/
+.build/
