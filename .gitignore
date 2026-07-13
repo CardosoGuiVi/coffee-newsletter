@@ -31,3 +31,4 @@ temp_*
 /tmp/sam_params.yaml
 lambda-layer/
 .build/
+requirements.txt
