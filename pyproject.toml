@@ -6,11 +6,11 @@ requires-python = ">=3.12"
 dependencies = [
     "anthropic>=0.109.2",
     "email-validator>=2.3.0",
-    "fastapi[standard]>=0.136.3",
+    "fastapi[standard]>=0.138.0",
     "feedparser>=6.0.12",
     "httpx>=0.28.1",
     "pydantic[email]>=2.13.4",
-    "pydantic-settings>=2.14.1",
+    "pydantic-settings>=2.14.2",
     "resend>=2.30.1",
     "sendgrid>=6.12.5",
     "uvicorn>=0.49.0",
@@ -20,7 +20,8 @@ dependencies = [
     "greenlet>=3.5.2",
     "jinja2>=3.1.6",
     "fastapi-csrf-protect>=1.0.7",
-    "slowapi>=0.1.9",
+    "slowapi>=0.1.10",
+    "mangum>=0.21.0",
 ]
 
 [tool.fastapi]
@@ -31,10 +32,10 @@ dev = [
     "ipython>=9.14.1",
     "mypy>=2.1.0",
     "pre-commit>=4.6.0",
-    "pytest>=9.1.0",
+    "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "pytest-cov>=7.1.0",
-    "ruff>=0.15.17",
+    "ruff>=0.15.19",
 ]
 
 [tool.ruff]
@@ -43,7 +44,8 @@ target-version = "py312"
 exclude = [
     ".venv",
     "packages/database/migrations",
-    "__pycache__"
+    "__pycache__",
+    ".aws-sam",
 ]
 
 [tool.ruff.lint]
@@ -80,6 +82,7 @@ explicit_package_bases = true
 exclude = [
     "packages/database/migrations",
     "apps/web",
+    ".aws-sam",
 ]
 plugins = [
     "pydantic.mypy",

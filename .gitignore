@@ -23,7 +23,12 @@ alembic/versions/*.pyc
 # IDE
 .vscode/
 .idea/
+.aws-sam/
 
 # Temp files in project
 temp_*
 **/artifacts
+/tmp/sam_params.yaml
+lambda-layer/
+.build/
+requirements.txt

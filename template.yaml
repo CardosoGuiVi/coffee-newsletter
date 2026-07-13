@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  DatabasePassword:
+    Type: String
+    NoEcho: true
+  AnthropicApiKey:
+    Type: String
+    NoEcho: true
+  ResendApiKey:
+    Type: String
+    NoEcho: true
+  SecretKey:
+    Type: String
+    NoEcho: true
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Runtime: python3.12
+    Environment:
+      Variables:
+        # Database
+        COFFEE_DATABASE__HOST: "ep-falling-pond-acq13wbg-pooler.sa-east-1.aws.neon.tech"
+        COFFEE_DATABASE__PORT: "5432"
+        COFFEE_DATABASE__USER: "neondb_owner"
+        COFFEE_DATABASE__DB: "neondb"
+        COFFEE_DATABASE__SSL: "true"
+        COFFEE_DATABASE__PASSWORD: !Ref DatabasePassword
+        # AI
+        COFFEE_AI_PROVIDER__API_KEY: !Ref AnthropicApiKey
+        # Resend
+        COFFEE_RESEND_API_KEY: !Ref ResendApiKey
+        # App
+        COFFEE_ENVIRONMENT: "production"
+        COFFEE_BASE_URL: "https://coado.club"
+        COFFEE_API_URL: "https://coado.club/v1"
+        COFFEE_SECRET_KEY: !Ref SecretKey
+        COFFEE_ALLOWED_HOSTS: '["coado.club", "www.coado.club", "coffee-newsletter-self.vercel.app", "rwkpejfc3ynbif3u6dhsdhg2we0vpapa.lambda-url.sa-east-1.on.aws"]'
+        COFFEE_CORS_ORIGINS: '["https://coado.club", "https://*.vercel.app"]'
+        COFFEE_FROM_EMAIL_NEWSLETTER: "Coado <newsletter@send.coado.club>"
+        COFFEE_FROM_EMAIL_WELCOME: "Coado <welcome@send.coado.club>"
+
+Resources:
+  CoadoDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: coado-dependencies
+      ContentUri: lambda-layer/
+      CompatibleRuntimes:
+        - python3.12
+
+  CoadoApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: coado-api
+      CodeUri: .build/function/
+      Handler: apps.api.main.handler
+      Layers:
+        - !Ref CoadoDependenciesLayer
+      LoggingConfig:
+        LogFormat: JSON
+        ApplicationLogLevel: INFO
+        SystemLogLevel: INFO
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins:
+            - "https://coado.club"
+            - "https://coffee-newsletter-self.vercel.app"
+          AllowMethods:
+            - GET
+            - POST
+          AllowHeaders:
+            - Content-Type
+
+Outputs:
+  CoadoApiFunctionUrl:
+    Description: "Lambda Function URL"
+    Value: !GetAtt CoadoApiFunctionUrl.FunctionUrl
