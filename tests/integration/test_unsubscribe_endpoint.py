@@ -1,5 +1,7 @@
 """Integration tests for POST /v1/unsubscribe."""
 
+from datetime import UTC, datetime
+
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -37,17 +39,27 @@ class TestUnsubscribeHappyPath:
         assert sub.subscribed is False
         assert sub.unsubscribed_at is not None
 
-    async def test_already_unsubscribed_returns_200(
+    async def test_already_unsubscribed_returns_200_without_resetting_cooldown(
         self, client: AsyncClient, db_session: AsyncSession
     ) -> None:
-        """Calling unsubscribe on an already-inactive subscriber returns 200.
+        """Unsubscribing an already-inactive subscriber returns 200 without
+        restarting the re-subscribe cooldown.
 
-        The service checks only that the email exists in the DB, not that the
-        subscriber is currently active. soft_delete is idempotent — it just
-        updates unsubscribed_at again. This is intentional behaviour: the
-        endpoint must never expose whether an email is subscribed or not.
+        The endpoint must never expose whether an email is subscribed, so it
+        still answers 200. But unregister is a no-op when already unsubscribed:
+        re-running soft_delete would reset unsubscribed_at and restart the
+        30-day cooldown clock.
         """
-        db_session.add(Subscriber(email="already@example.com", subscribed=False))
+        from packages.newsletter.repository import SubscriberRepository
+
+        original = datetime(2026, 1, 1, tzinfo=UTC)
+        db_session.add(
+            Subscriber(
+                email="already@example.com",
+                subscribed=False,
+                unsubscribed_at=original,
+            )
+        )
         await db_session.flush()
 
         resp = await client.post(
@@ -55,6 +67,10 @@ class TestUnsubscribeHappyPath:
         )
 
         assert resp.status_code == 200
+        repo = SubscriberRepository(db_session)
+        sub = await repo.get_by_email("already@example.com")
+        assert sub is not None
+        assert sub.unsubscribed_at == original  # cooldown clock left untouched
 
 
 class TestUnsubscribeErrors:
