@@ -6,18 +6,22 @@ orchestrated code — a fixed sequence of steps, with no agentic behavior (see
 
 ## Schedule
 
-Runs every **Monday at 11:00 UTC** via GitHub Actions cron. The entrypoint is
-`apps/newsletter_pipeline`, which wires together the packages and executes the
-flow.
+Runs every **Monday at 07:17 UTC** (04:17 BRT) via GitHub Actions cron
+(`17 7 * * 1`). The entrypoint is `apps/newsletter_pipeline`, which wires together
+the packages and executes the flow.
+
+> The pipeline currently runs on GitHub Actions; a migration to a Lambda function
+> triggered by EventBridge Scheduler is planned (exact-time scheduling, no
+> peak-hour queue drift) — see [ROADMAP](../../ROADMAP.md).
 
 ## Flow
 
 ```
-GitHub Actions cron (Monday 11:00 UTC)
+GitHub Actions cron (Monday 07:17 UTC)
   ↓
 apps/newsletter_pipeline
   ├── packages/scraper     → collect RSS feeds (Brazilian + international sources)
-  ├── packages/ai          → summarize each article with the Claude API (claude-haiku)
+  ├── packages/ai          → summarize each article with the Claude API (claude-haiku-4-5)
   ├── packages/newsletter  → render the email with Jinja2 templates
   └── packages/mailer      → send to all subscribers via Resend
 ```
@@ -27,7 +31,7 @@ Each step is owned by a single package:
 1. **Scrape** — `packages/scraper` fetches and parses the configured RSS feeds
    using `feedparser`, producing a normalized list of articles.
 2. **Summarize** — `packages/ai` sends each article to the Claude API and gets
-   back a concise summary. `claude-haiku` is used for cost efficiency.
+   back a concise summary. `claude-haiku-4-5` is used for cost efficiency.
 3. **Render** — `packages/newsletter` composes the summaries into the email body
    using Jinja2 templates (`newsletter.html`, `newsletter_item.html`).
 4. **Send** — `packages/mailer` delivers the rendered email to every active

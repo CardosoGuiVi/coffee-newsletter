@@ -9,10 +9,10 @@ done, in progress, and planned.
 - FastAPI app with REST endpoints (`/v1/`)
 - PostgreSQL with Alembic migrations
 - Email validation via Pydantic
-- Deployed on Railway (single replica)
+- Deployed on AWS Lambda (SAM, Function URL, `sa-east-1`)
 - Branding and visual identity (Coado design system: colors, Fraunces + Inter,
   logo, decorative elements)
-- Frontend moved to Vercel with a rewrite proxy to the Railway API
+- Frontend moved to Vercel with a rewrite proxy to the API (Lambda Function URL)
 - Custom domain `coado.club` with automatic SSL
 - Rate limiting on endpoints (`slowapi`)
 - CORS allowlist (`CORSMiddleware`) and trusted-host validation
@@ -44,6 +44,14 @@ done, in progress, and planned.
 - Fakes: `FakeMailer`, `FakeAI` for isolated testing
 - CI running tests on GitHub Actions
 
+### Infrastructure
+- Database migrated to Neon (PostgreSQL, free tier, built-in connection pooler)
+- API migrated to AWS Lambda (`sa-east-1`) via AWS SAM (`template.yaml`), Mangum
+  adapter, exposed through a Lambda Function URL
+- `vercel.json` rewrite now points at the Function URL
+- Remaining cleanup: `deploy.yaml` / `railway.toml` still reference Railway (to be
+  removed once the SAM deploy step replaces the Railway deploy)
+
 ## 🎯 Planned
 
 ### Short term
@@ -64,38 +72,22 @@ done, in progress, and planned.
 - Basic subscriber analytics
 
 ### Infrastructure migration
-Ordered steps — each is independent and does not require the next to be done first.
+Remaining ordered steps — each is independent and does not require the next to be
+done first. (Database → Neon and API → AWS Lambda are done; see ✅ Done above.)
 
-**Step 1 — Migrate database to Neon** *(low effort)*
-- Provision Neon PostgreSQL (free tier)
-- Run Alembic migrations against Neon
-- Update Railway env vars to point to Neon
-- Decouple DB from Railway; API stays on Railway unchanged
-- Zero code changes required
-
-**Step 2 — Migrate API to AWS Lambda** *(medium effort)*
-- Define infrastructure in `template.yaml` (AWS SAM)
-- Add Mangum adapter (`handler = Mangum(app)`) to `apps/api/main.py`
-- `sam build && sam deploy` via GitHub Actions (`aws-actions/configure-aws-credentials`)
-- Expose via Lambda Function URL initially (no API Gateway needed yet)
-- Update `vercel.json` rewrite destination to the Function URL
-- Neon's built-in connection pooler handles Lambda's stateless connections
-- Replace `deploy.yaml` Railway deploy with SAM deploy step
-- CI (tests, lint) stays on GitHub Actions unchanged
-
-**Step 3 — Migrate newsletter pipeline to AWS Lambda + EventBridge** *(medium effort)*
+**Step 1 — Migrate newsletter pipeline to AWS Lambda + EventBridge** *(medium effort)*
 - Add pipeline Lambda function to `template.yaml` (SAM)
 - Create EventBridge Scheduler rule in SAM template (replaces GitHub Actions cron)
 - Reliable, exact-time scheduling — no more peak-hour queue delays
 - `newsletter.yaml` GitHub Actions workflow becomes the Lambda deploy step only
 
-**Step 4 — Custom domain with API Gateway HTTP API** *(low effort, when needed)*
+**Step 2 — Custom domain with API Gateway HTTP API** *(low effort, when needed)*
 - Replace Lambda Function URL with API Gateway HTTP API
 - Associate `api.coado.club` as custom domain
 - ~$1/million requests — negligible at current scale
 - Alternative: CloudFront in front of Function URL (more complex, more features)
 
-**Step 5 — Migrate email to AWS SES** *(medium effort)*
+**Step 3 — Migrate email to AWS SES** *(medium effort)*
 - Add SES provider implementing the existing `Mailer` protocol in `packages/mailer/`
 - Request SES production access via AWS Support (sandbox only allows verified
   emails by default — approval typically takes 24-48h)

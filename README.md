@@ -6,7 +6,7 @@
   ![CI](https://github.com/CardosoGuiVi/coffee-newsletter/actions/workflows/ci.yml/badge.svg)
   [![codecov](https://codecov.io/gh/CardosoGuiVi/coffee-newsletter/graph/badge.svg)](https://codecov.io/gh/CardosoGuiVi/coffee-newsletter)
   [![Vercel](https://img.shields.io/badge/Vercel-deployed-000000?logo=vercel&logoColor=white)](https://coado.club)
-  ![Railway](https://img.shields.io/badge/Railway-deployed-6742f5?logo=railway&logoColor=white)
+  ![AWS Lambda](https://img.shields.io/badge/AWS%20Lambda-deployed-FF9900?logo=awslambda&logoColor=white)
 
 </div>
 
@@ -23,7 +23,7 @@
 A fullstack project combining:
 
 - **Signup site + API** — a static frontend (Vercel) talking to a FastAPI service
-  (Railway) that manages subscriptions and exposes public stats.
+  (AWS Lambda) that manages subscriptions and exposes public stats.
 - **Automation pipeline** — RSS scraper → Claude API → Resend email delivery,
   running weekly on GitHub Actions.
 
@@ -49,7 +49,7 @@ coffee-newsletter/
 │   ├── newsletter/           ← Newsletter domain logic, templates, prompts
 │   └── scraper/              ← RSS collection and scraping
 ├── pyproject.toml            ← Dependencies (uv)
-├── Makefile · compose.yaml · railway.toml · alembic.ini
+├── Makefile · compose.yaml · template.yaml · alembic.ini
 ```
 
 📚 **Full documentation lives in [`docs/`](docs/README.md):**
@@ -89,9 +89,9 @@ frontend at the local API.
 | Language  | Python 3.12, uv                                                  |
 | Backend   | FastAPI, SQLAlchemy 2.0 async, asyncpg, Alembic, Pydantic v2     |
 | Email     | Resend, Jinja2 templates                                        |
-| AI        | Anthropic Claude API (`claude-haiku`)                            |
+| AI        | Anthropic Claude API (`claude-haiku-4-5`)                        |
 | Frontend  | Vanilla HTML/CSS/JS                                              |
-| Infra     | Railway (API + PostgreSQL), Vercel (frontend), GitHub Actions   |
+| Infra     | AWS Lambda (API, SAM), Neon (PostgreSQL), Vercel, GitHub Actions |
 | Local dev | Docker Compose (PostgreSQL), Makefile                           |
 | Quality   | ruff, mypy, pre-commit, Dependabot                              |
 
@@ -99,11 +99,11 @@ frontend at the local API.
 
 | Component | Platform       | Trigger                              |
 |-----------|----------------|--------------------------------------|
-| API       | Railway        | Deploy on merge to `main`            |
+| API       | AWS Lambda (sa-east-1) | SAM — `make deploy`          |
 | Frontend  | Vercel         | `main` → production, others → preview |
-| Pipeline  | GitHub Actions | Cron — Mondays at 11:00 UTC          |
+| Pipeline  | GitHub Actions | Cron — Mondays 07:17 UTC (04:17 BRT) |
 
-The frontend reaches the API through a Vercel rewrite proxy (`/v1/*` → Railway),
+The frontend reaches the API through a Vercel rewrite proxy (`/v1/*` → Lambda Function URL),
 so the browser stays on one origin and there is no CORS to manage. Details in
 [deployment](docs/infrastructure/deployment.md).
 
