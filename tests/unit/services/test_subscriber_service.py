@@ -109,6 +109,30 @@ class TestRegister:
         assert subscriber.email == "swallow@example.com"
         assert subscriber.subscribed is True
 
+    async def test_resubscribes_when_unsubscribed_at_is_null(
+        self, db_session: AsyncSession, fake_mailer: FakeMailer
+    ) -> None:
+        """Re-subscribe proceeds when the inactive row has no unsubscribed_at.
+
+        _is_within_cooldown returns False for a null unsubscribed_at, so the
+        cooldown check does not block re-subscription (e.g. legacy/edge rows).
+        """
+        db_session.add(
+            Subscriber(
+                email="nullts@example.com",
+                subscribed=False,
+                unsubscribed_at=None,
+            )
+        )
+        await db_session.flush()
+
+        service = make_service(db_session, fake_mailer)
+        result = await service.register("nullts@example.com")
+
+        assert result.subscribed is True
+        # Re-subscription never sends a welcome (only brand-new subscribers do).
+        assert "nullts@example.com" not in fake_mailer.sent_welcomes
+
 
 class TestUnregister:
     async def test_marks_subscriber_as_unsubscribed(
@@ -134,3 +158,68 @@ class TestUnregister:
 
         with pytest.raises(SubscriberNotFound):
             await service.unregister("ghost@example.com")
+
+    async def test_noop_when_already_unsubscribed_keeps_cooldown(
+        self, db_session: AsyncSession
+    ) -> None:
+        """unregister is a no-op when the subscriber is already inactive.
+
+        Re-running soft_delete would reset unsubscribed_at and restart the
+        30-day cooldown; the guard returns early instead, leaving it untouched.
+        """
+        original = datetime(2026, 1, 1, tzinfo=UTC)
+        db_session.add(
+            Subscriber(
+                email="alreadyoff@example.com",
+                subscribed=False,
+                unsubscribed_at=original,
+            )
+        )
+        await db_session.flush()
+
+        service = make_service(db_session)
+        await service.unregister("alreadyoff@example.com")  # no exception raised
+
+        repo = SubscriberRepository(db_session)
+        sub = await repo.get_by_email("alreadyoff@example.com")
+        assert sub is not None
+        assert sub.unsubscribed_at == original  # cooldown clock not reset
+
+
+class TestStats:
+    async def test_counts_only_active_subscribers(
+        self, db_session: AsyncSession
+    ) -> None:
+        now = datetime.now(UTC)
+        db_session.add_all(
+            [
+                Subscriber(email="a1@example.com", subscribed=True, created_at=now),
+                Subscriber(email="a2@example.com", subscribed=True, created_at=now),
+                Subscriber(email="off@example.com", subscribed=False, created_at=now),
+            ]
+        )
+        await db_session.flush()
+
+        service = make_service(db_session)
+        result = await service.stats()
+
+        assert result.total_subscribers == 2
+
+    async def test_joined_this_week_excludes_older_than_7_days(
+        self, db_session: AsyncSession
+    ) -> None:
+        now = datetime.now(UTC)
+        old = now - timedelta(days=10)
+        db_session.add_all(
+            [
+                Subscriber(email="recent@example.com", subscribed=True, created_at=now),
+                Subscriber(email="oldie@example.com", subscribed=True, created_at=old),
+            ]
+        )
+        await db_session.flush()
+
+        service = make_service(db_session)
+        result = await service.stats()
+
+        assert result.total_subscribers == 2
+        assert result.joined_this_week == 1
