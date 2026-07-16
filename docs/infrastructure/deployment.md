@@ -4,29 +4,45 @@ Coado is deployed across three platforms, each handling what it does best:
 
 | Component | Platform        | Trigger                                  |
 |-----------|-----------------|------------------------------------------|
-| API       | Railway         | Deploy on merge to `main`                |
+| API       | AWS Lambda (`sa-east-1`) | SAM — `make deploy`             |
 | Frontend  | Vercel          | `main` → production, other branches → preview |
-| Pipeline  | GitHub Actions  | Scheduled cron (Mondays 11:00 UTC)       |
+| Pipeline  | GitHub Actions  | Scheduled cron (Mondays 07:17 UTC)       |
 
-## API — Railway
+## API — AWS Lambda
 
-The FastAPI service runs on Railway with a single replica, which suits the
-traffic profile (see [decisions](../architecture/decisions.md)). Migrations run
-as a pre-deploy step, before the new release starts taking traffic.
+The FastAPI app runs as a single AWS Lambda function (`coado-api`) in `sa-east-1`,
+fronted by a **Lambda Function URL**. The Mangum adapter
+(`handler = Mangum(app, lifespan="off")` in `apps/api/main.py`) bridges Lambda's
+event model to ASGI. This suits the traffic profile — no idle compute between
+requests (see [decisions](../architecture/decisions.md)).
 
-Deploy configuration (`railway.toml`):
+Infrastructure is defined with **AWS SAM** in `template.yaml`:
 
-```toml
-[deploy]
-preDeployCommand = "alembic upgrade head"
-startCommand = "uv run fastapi run --port $PORT"
-healthcheckPath = "/v1/health"
+- **Function** `coado-api` — handler `apps.api.main.handler`, python3.12, 256 MB,
+  30 s timeout.
+- **Layer** `coado-dependencies` — third-party dependencies, rebuilt with
+  `make build-layer` only when dependencies change.
+- **Function URL** — `AuthType: NONE` with a CORS allowlist (`coado.club` and the
+  Vercel preview host); methods `GET`/`POST`.
+- Non-secret config (Neon host, base URLs, allowed hosts) is baked into the
+  template's `Globals.Function.Environment`; secrets (DB password, Anthropic and
+  Resend keys, app secret) are passed as SAM parameters.
+
+Deploy from a local checkout:
+
+```bash
+make deploy   # make_sam_params.sh → build-function → sam build && sam deploy
 ```
 
-Deployment is driven by a GitHub Actions workflow that runs `railway up` via the
-Railway CLI on merge to `main`, using a `RAILWAY_TOKEN` secret. Because the deploy
-is CLI-driven, the Railway service does not need its native GitHub integration
-connected — keeping a single source of truth for what triggers a deploy.
+`make deploy` assembles the secret parameters, copies `apps/` + `packages/` into
+`.build/function/`, then runs `sam build && sam deploy`. Database migrations are
+**not** part of the deploy — run them separately against Neon with
+`make db-migrate` (`alembic upgrade head`) when a release includes schema changes.
+
+> **Note:** deploys are currently run manually via `make deploy`. The
+> `.github/workflows/deploy.yaml` workflow still deploys the *old* Railway service
+> (`railway up`) on merge to `main`; it is a leftover from the migration and will
+> be replaced by a SAM deploy step (or removed).
 
 Required environment variables are listed in [environment.md](../development/environment.md).
 
@@ -40,10 +56,10 @@ The static frontend lives in `apps/web` and is hosted on Vercel.
 The domain `coado.club` is managed through Vercel's nameservers, with Vercel
 issuing SSL automatically.
 
-The two surfaces live on separate domains: `coado.club` is the public frontend
-(Vercel), and `api.coado.club` is the Railway API host. The API domain is not
-user-facing — the browser only ever sees `coado.club`, and the rewrite proxy
-below forwards `/v1/*` to the API behind the scenes.
+The browser only ever talks to `coado.club` (Vercel). The API has no public
+domain of its own yet — it is served straight from the raw Lambda Function URL,
+and the rewrite proxy below forwards `/v1/*` to it behind the scenes. (A custom
+`api.coado.club` via API Gateway is a planned step — see [ROADMAP](../../ROADMAP.md).)
 
 ### Routing and the API proxy
 
@@ -55,14 +71,14 @@ routing:
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/v1/(.*)", "destination": "https://api.coado.club/v1/$1" }
+    { "source": "/v1/(.*)", "destination": "https://rwkpejfc3ynbif3u6dhsdhg2we0vpapa.lambda-url.sa-east-1.on.aws/v1/$1" }
   ]
 }
 ```
 
-- **API proxy** — `/v1/*` is rewritten to the Railway API, so the browser only
-  ever talks to the Vercel origin (no CORS) and the frontend's `fetch` calls stay
-  relative.
+- **API proxy** — `/v1/*` is rewritten to the Lambda Function URL, so the browser
+  only ever talks to the Vercel origin (no CORS) and the frontend's `fetch` calls
+  stay relative.
 - **Clean URLs** — with `cleanUrls`, each page is served from its `.html` file
   without the extension: `/` (`index.html`), `/about`, `/privacy`, `/terms`,
   `/unsubscribe`.
@@ -74,14 +90,14 @@ swallow the other pages and prevent a real 404. See the
 [frontend pages](../development/getting-started.md#pages-and-routes) for the full
 route list.
 
-> **Preview note:** preview deployments proxy to the *same* production Railway
+> **Preview note:** preview deployments proxy to the *same* production Lambda
 > API (there is a single API environment). Be mindful when testing the signup
 > form from a preview URL, since it writes to the real database.
 
 ## Pipeline — GitHub Actions
 
 The newsletter pipeline is a scheduled workflow, not a long-running service. It
-runs every Monday at 11:00 UTC, executing `apps/newsletter_pipeline`. Provider
+runs every Monday at 07:17 UTC, executing `apps/newsletter_pipeline`. Provider
 credentials come from repository Actions secrets. See
 [pipeline.md](pipeline.md) for the run flow.
 
