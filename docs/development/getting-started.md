@@ -1,7 +1,7 @@
 # Getting Started
 
 How to run Coado locally. The frontend and API run separately, mirroring
-production (Vercel for the frontend, Railway for the API).
+production (Vercel for the frontend, AWS Lambda for the API).
 
 ## Prerequisites
 
@@ -86,7 +86,7 @@ fallback, and the `/v1` proxy).
 
 ### Pointing the frontend at the local API
 
-In production, a Vercel rewrite proxies `/v1/*` to the Railway API, so the
+In production, a Vercel rewrite proxies `/v1/*` to the Lambda Function URL, so the
 frontend's `fetch` calls are relative. Locally there is no such proxy, so point
 the frontend at the local API with a small config file.
 

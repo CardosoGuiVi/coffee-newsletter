@@ -37,6 +37,9 @@ done, in progress, and planned.
 - ruff, mypy, pre-commit, Dependabot
 - Technical documentation under `docs/`
 - Branding refinement (tagline, visual polish)
+- Fixed subscriber data bugs from code review: `created_at` overwrite in
+  `soft_delete`/`update`, `unregister` cooldown reset, redundant `db.refresh`,
+  and `stats` TOCTOU collapsed into a single aggregation query — with tests
 
 ### Testing
 - Unit tests: services (`SubscriptionService`, `NewsletterService`), schemas, scraper
@@ -49,22 +52,12 @@ done, in progress, and planned.
 - API migrated to AWS Lambda (`sa-east-1`) via AWS SAM (`template.yaml`), Mangum
   adapter, exposed through a Lambda Function URL
 - `vercel.json` rewrite now points at the Function URL
-- Remaining cleanup: `deploy.yaml` / `railway.toml` still reference Railway (to be
-  removed once the SAM deploy step replaces the Railway deploy)
+- Removed the leftover Railway deploy workflow (`deploy.yaml`) and `railway.toml`
 
 ## 🎯 Planned
 
 ### Short term
 - Periodic security review (audit headers/CORS config, dependencies, secrets)
-- **Repository bug fixes** (identified in code review):
-  - `soft_delete()` incorrectly overwrites `created_at`, corrupting original join
-    date and inflating `joined_this_week` stats
-  - `update()` (re-subscribe) also resets `created_at`, same impact on stats
-  - `unregister()` missing guard for already-unsubscribed state — double call
-    resets the 30-day cooldown clock
-  - Redundant `db.refresh()` in `soft_delete()` (returns `None`, extra round-trip)
-  - `stats()` runs two sequential queries with a TOCTOU window — collapse into
-    single query with conditional aggregation
 
 ### Medium term
 - Open/click statistics

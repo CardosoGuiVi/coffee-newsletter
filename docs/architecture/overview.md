@@ -38,7 +38,7 @@ coffee-newsletter/
 ├── pyproject.toml            ← Dependencies (uv)
 ├── Makefile                  ← Useful commands
 ├── compose.yaml              ← Docker (PostgreSQL)
-├── railway.toml              ← Deploy configuration
+├── template.yaml             ← AWS SAM infra (Lambda)
 └── alembic.ini               ← Alembic config
 ```
 
@@ -101,8 +101,8 @@ and testing with fakes possible without touching domain code.
 
 The same packages power two different entrypoints:
 
-1. **The API** (`apps/api`) — runs continuously on Railway, handling signups and
-   serving public stats.
+1. **The API** (`apps/api`) — runs on AWS Lambda (Function URL), handling signups
+   and serving public stats.
 2. **The pipeline** (`apps/newsletter_pipeline`) — runs on a schedule via GitHub
    Actions, not as a long-running service.
 

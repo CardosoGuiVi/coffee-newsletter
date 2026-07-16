@@ -55,7 +55,7 @@ coffee-newsletter/
 📚 **Full documentation lives in [`docs/`](docs/README.md):**
 
 - [Architecture overview](docs/architecture/overview.md)
-- [Architecture decisions](docs/architecture/decisions.md) — why Railway, why no
+- [Architecture decisions](docs/architecture/decisions.md) — why AWS Lambda, why no
   agent frameworks, why a cron over a worker
 - [Packages](docs/architecture/packages.md)
 - [Getting started](docs/development/getting-started.md)

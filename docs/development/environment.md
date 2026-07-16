@@ -2,7 +2,7 @@
 
 Configuration is managed through Pydantic Settings in `packages/core/config.py`.
 Variables are loaded from a `.env` file locally and from the platform's secret
-store in production (Railway for the API, GitHub Actions secrets for the
+store in production (AWS Lambda for the API, GitHub Actions secrets for the
 pipeline).
 
 ## Local `.env`
@@ -58,7 +58,7 @@ Used by `packages/mailer` to deliver the newsletter and welcome emails.
 COFFEE_SECRET_KEY=...               # required — signs one-click unsubscribe tokens (HMAC-SHA256)
 COFFEE_ENVIRONMENT=development       # any value other than "development" enables the security headers
 COFFEE_DEBUG=false
-COFFEE_API_URL=https://api.coado.club    # required — the API host (used to build unsubscribe links)
+COFFEE_API_URL=https://coado.club/v1    # required — API base (used to build unsubscribe links)
 COFFEE_BASE_URL=https://coado.club       # required — the public site, shown in emails
 ```
 
@@ -67,31 +67,33 @@ they typically point at `http://localhost:8000` and `http://localhost:8080`.
 
 `ALLOWED_HOSTS` and `CORS_ORIGINS` ship with working defaults
 (`["localhost","127.0.0.1"]`); override them with a JSON array when needed. The
-API host must be listed in `ALLOWED_HOSTS`, because Vercel forwards the original
-`Host` header to Railway:
+API host must be listed in `ALLOWED_HOSTS` — in production that is the Lambda
+Function URL host that Vercel's rewrite forwards to:
 
 ```env
-COFFEE_ALLOWED_HOSTS=["api.coado.club","coado.club","www.coado.club","localhost","127.0.0.1"]
+COFFEE_ALLOWED_HOSTS=["coado.club","www.coado.club","<fn-id>.lambda-url.sa-east-1.on.aws","localhost","127.0.0.1"]
 COFFEE_CORS_ORIGINS=["https://coado.club","https://www.coado.club"]
 ```
 
-## Production — API (Railway)
+## Production — API (AWS Lambda)
 
-The same `COFFEE_`-prefixed variables are set as Railway service variables. There
-is no `DATABASE_URL` shortcut — the connection URI is assembled from the
-individual `COFFEE_DATABASE__*` components (`packages/database/schemas.py`), so
-Railway's PostgreSQL connection values go into those:
+The same `COFFEE_`-prefixed variables are provided to the Lambda function through
+`template.yaml`: non-secret values live in `Globals.Function.Environment`, and
+secrets (DB password, provider keys, app secret) are passed as SAM parameters
+(`make deploy` assembles them). There is no `DATABASE_URL` shortcut — the
+connection URI is assembled from the individual `COFFEE_DATABASE__*` components
+(`packages/database/schemas.py`), which hold Neon's PostgreSQL connection values:
 
 - `COFFEE_DATABASE__HOST`, `COFFEE_DATABASE__PORT`, `COFFEE_DATABASE__USER`,
-  `COFFEE_DATABASE__DB`, `COFFEE_DATABASE__PASSWORD`
+  `COFFEE_DATABASE__DB`, `COFFEE_DATABASE__PASSWORD` (Neon)
 - `COFFEE_AI_PROVIDER__API_KEY`
 - `COFFEE_RESEND_API_KEY`
 - `COFFEE_FROM_EMAIL_NEWSLETTER`, `COFFEE_FROM_EMAIL_WELCOME`
 - `COFFEE_SECRET_KEY`
 - `COFFEE_ENVIRONMENT=production`
-- `COFFEE_API_URL=https://api.coado.club`, `COFFEE_BASE_URL=https://coado.club`
-- `COFFEE_ALLOWED_HOSTS` — must include `api.coado.club` (the Host header Vercel
-  forwards), plus `coado.club` and `www.coado.club`
+- `COFFEE_API_URL=https://coado.club/v1`, `COFFEE_BASE_URL=https://coado.club`
+- `COFFEE_ALLOWED_HOSTS` — includes `coado.club`, `www.coado.club`, and the
+  Lambda Function URL host
 - `COFFEE_CORS_ORIGINS` — `https://coado.club`, `https://www.coado.club`
 
 ## Production — pipeline (GitHub Actions)
@@ -99,7 +101,7 @@ Railway's PostgreSQL connection values go into those:
 The weekly pipeline reads the same `COFFEE_`-prefixed settings, injected from the
 repository's Actions secrets and variables by `.github/workflows/newsletter.yaml`
 (database connection details plus the provider keys and `COFFEE_SECRET_KEY` for
-unsubscribe links), separate from the Railway service.
+unsubscribe links), separate from the Lambda function.
 
 ## Notes
 
