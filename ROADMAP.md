@@ -22,11 +22,16 @@ done, in progress, and planned.
 
 ### Automation pipeline
 - RSS scraper (`feedparser`) over Brazilian + international sources
-- Claude API summarization (`claude-haiku`)
+- Claude API summarization (`claude-haiku-4-5`)
 - Jinja2 email rendering (table-based, inline CSS, Gmail dark-mode handling)
 - Resend delivery
-- Scheduled weekly via GitHub Actions (Mondays 07:17 UTC = 04:17 BRT) — cron
-  moved from peak-hour `0 11` to off-peak `17 7` to avoid queue delays
+- Runs as its own AWS Lambda function (`coado-newsletter`), scheduled weekly by
+  EventBridge Scheduler (Mondays 11:00 UTC = 08:00 BRT) — exact-time firing, no
+  GitHub Actions cron-matrix delay to route around
+- Fixed a broken one-click unsubscribe link in production: `COFFEE_API_URL`
+  pointed at `api.coado.club`, a DNS record for the decommissioned Railway
+  service; now `https://www.coado.club`, matching where the API actually
+  answers
 
 ### Architecture & quality
 - Migrated to a modular monolith (monorepo: `apps/` + `packages/`)
@@ -53,6 +58,9 @@ done, in progress, and planned.
   adapter, exposed through a Lambda Function URL
 - `vercel.json` rewrite now points at the Function URL
 - Removed the leftover Railway deploy workflow (`deploy.yaml`) and `railway.toml`
+- Newsletter pipeline migrated to AWS Lambda + EventBridge Scheduler, replacing
+  the `newsletter.yaml` GitHub Actions cron; shares `template.yaml`'s layer and
+  config with the API function (see Automation pipeline above)
 
 ## 🎯 Planned
 
@@ -66,21 +74,16 @@ done, in progress, and planned.
 
 ### Infrastructure migration
 Remaining ordered steps — each is independent and does not require the next to be
-done first. (Database → Neon and API → AWS Lambda are done; see ✅ Done above.)
+done first. (Database → Neon, API → AWS Lambda, and pipeline → AWS Lambda +
+EventBridge are done; see ✅ Done above.)
 
-**Step 1 — Migrate newsletter pipeline to AWS Lambda + EventBridge** *(medium effort)*
-- Add pipeline Lambda function to `template.yaml` (SAM)
-- Create EventBridge Scheduler rule in SAM template (replaces GitHub Actions cron)
-- Reliable, exact-time scheduling — no more peak-hour queue delays
-- `newsletter.yaml` GitHub Actions workflow becomes the Lambda deploy step only
-
-**Step 2 — Custom domain with API Gateway HTTP API** *(low effort, when needed)*
+**Step 1 — Custom domain with API Gateway HTTP API** *(low effort, when needed)*
 - Replace Lambda Function URL with API Gateway HTTP API
 - Associate `api.coado.club` as custom domain
 - ~$1/million requests — negligible at current scale
 - Alternative: CloudFront in front of Function URL (more complex, more features)
 
-**Step 3 — Migrate email to AWS SES** *(medium effort)*
+**Step 2 — Migrate email to AWS SES** *(medium effort)*
 - Add SES provider implementing the existing `Mailer` protocol in `packages/mailer/`
 - Request SES production access via AWS Support (sandbox only allows verified
   emails by default — approval typically takes 24-48h)
@@ -88,6 +91,22 @@ done first. (Database → Neon and API → AWS Lambda are done; see ✅ Done abo
 - Configure bounce/complaint handling via SNS (maps naturally to existing
   `soft_delete` logic)
 - Replace Resend — cost drops from ~$20/50k emails to ~$0.10/1k emails
+
+**Step 3 — Isolate newsletter delivery behind SQS + DLQ** *(medium effort)*
+- The pipeline Lambda (`coado-newsletter`) becomes producer-only: scrape,
+  summarize, render, then enqueue one message per active subscriber (email +
+  unsubscribe token + a reference to the rendered HTML — not the HTML itself,
+  to stay under the 256 KB message limit and avoid duplicating the body per
+  recipient) and stop
+- A separate Lambda, triggered by the queue, sends one email per message via
+  Resend, with reserved concurrency to respect Resend's rate limit
+- Failed sends land in a DLQ instead of being silently retried against the
+  whole subscriber list — replaces today's `MaximumRetryAttempts: 0` all-or-
+  nothing approach with per-recipient retries and visibility into exactly who
+  failed
+- Standard SQS is at-least-once, so a retried message could double-send to one
+  recipient (not everyone, as an EventBridge retry would today); FIFO with a
+  per-campaign `MessageDeduplicationId` removes even that if it matters
 
 ### Long term
 - Subscriber segments

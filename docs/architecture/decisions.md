@@ -57,19 +57,27 @@ access, rather than relying on the proxy alone.
 FastAPI app served the frontend via `StaticFiles`; that was removed once the
 frontend moved to Vercel.
 
-## Scheduled cron, not a long-running worker
+## Scheduled Lambda, not a long-running worker
 
-**Decision:** The newsletter pipeline runs as a scheduled GitHub Actions job
-(Mondays at 07:17 UTC), not as a persistent service.
+**Decision:** The newsletter pipeline runs as its own AWS Lambda function
+(`coado-newsletter`), triggered weekly by an EventBridge Scheduler schedule
+(Mondays at 11:00 UTC), not as a persistent service.
 
 **Why:** The workload is intermittent — it runs once a week for a few minutes.
 A long-running worker would sit idle 99.9% of the time while still consuming
-resources. GitHub Actions cron is free for this cadence, versioned alongside the
-code, and requires no extra infrastructure.
+resources. This started as a GitHub Actions cron job; it moved to Lambda +
+EventBridge Scheduler once the API had already migrated to Lambda, so the
+pipeline could share the same SAM template, dependency layer, and config
+instead of maintaining a second deploy path. EventBridge Scheduler also fires
+at the exact configured time — GitHub Actions' shared cron matrix queues jobs
+at busy times (e.g. `:00`), which is why the schedule had briefly moved to an
+off-peak minute (`07:17`); that workaround is no longer needed and the schedule
+reverted to a round `11:00 UTC`.
 
-**Trade-off:** Cold start each run and a hard dependency on GitHub Actions
-availability/scheduling precision (cron can drift by a few minutes). Neither
-matters for a weekly email.
+**Trade-off:** Cold start each run. The 15-minute Lambda timeout is a hard
+ceiling the old GitHub Actions job (6-hour default) didn't have — irrelevant
+today, but a real constraint if the subscriber list or send loop grows enough
+to approach it (see [pipeline.md](../infrastructure/pipeline.md)).
 
 ## In-process rate limiting and horizontal scale
 

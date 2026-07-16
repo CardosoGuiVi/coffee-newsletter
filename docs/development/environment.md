@@ -96,12 +96,13 @@ connection URI is assembled from the individual `COFFEE_DATABASE__*` components
   Lambda Function URL host
 - `COFFEE_CORS_ORIGINS` — `https://coado.club`, `https://www.coado.club`
 
-## Production — pipeline (GitHub Actions)
+## Production — pipeline (AWS Lambda)
 
-The weekly pipeline reads the same `COFFEE_`-prefixed settings, injected from the
-repository's Actions secrets and variables by `.github/workflows/newsletter.yaml`
-(database connection details plus the provider keys and `COFFEE_SECRET_KEY` for
-unsubscribe links), separate from the Lambda function.
+The weekly pipeline runs as its own Lambda function (`coado-newsletter`,
+triggered by EventBridge Scheduler) and reads the exact same `Globals` block in
+`template.yaml` as the API function — same Neon connection, provider keys, and
+`COFFEE_SECRET_KEY` for signing unsubscribe tokens. There is no separate config
+surface for the pipeline.
 
 ## Notes
 

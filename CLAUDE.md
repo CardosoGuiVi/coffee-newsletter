@@ -128,7 +128,7 @@ tests/
 | API | AWS Lambda (`sa-east-1`) | SAM, Mangum adapter, Function URL |
 | Database | Neon (PostgreSQL) | Free tier, connection pooler enabled |
 | Frontend | Vercel | `main` → production (`coado.club`) |
-| Pipeline | GitHub Actions | Mondays 07:17 UTC (temporary, moving to EventBridge) |
+| Pipeline | AWS Lambda (`sa-east-1`) | SAM, EventBridge Scheduler, Mondays 11:00 UTC |
 | Layer | `coado-dependencies` | Managed by SAM via `template.yaml` |
 
 ---
