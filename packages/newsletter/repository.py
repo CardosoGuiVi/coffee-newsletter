@@ -30,7 +30,6 @@ class SubscriberRepository:
     async def update(self, subscriber: Subscriber) -> Subscriber:
         subscriber.subscribed = True
         subscriber.unsubscribed_at = None
-        subscriber.created_at = datetime.now(UTC)
         await self.db.commit()
         await self.db.refresh(subscriber)
         return subscriber
@@ -38,9 +37,7 @@ class SubscriberRepository:
     async def soft_delete(self, subscriber: Subscriber) -> None:
         subscriber.subscribed = False
         subscriber.unsubscribed_at = datetime.now(UTC)
-        subscriber.created_at = datetime.now(UTC)
         await self.db.commit()
-        await self.db.refresh(subscriber)
 
     async def list_active_subscribers(
         self,
@@ -49,16 +46,19 @@ class SubscriberRepository:
 
         return result.scalars().all()
 
-    async def count_active(self) -> int:
-        result = await self.db.execute(
-            select(func.count()).where(Subscriber.subscribed)
-        )
-        return result.scalar_one()
+    async def get_stats(self, since: datetime) -> tuple[int, int]:
+        """Return (active total, joined since) from a single query.
 
-    async def count_new_since(self, since: datetime) -> int:
+        Conditional aggregation avoids the TOCTOU window of two separate counts,
+        so both numbers reflect the same snapshot.
+        """
         result = await self.db.execute(
-            select(func.count()).where(
-                Subscriber.subscribed, Subscriber.created_at >= since
-            )
+            select(
+                func.count().filter(Subscriber.subscribed),
+                func.count().filter(
+                    Subscriber.subscribed, Subscriber.created_at >= since
+                ),
+            ).select_from(Subscriber)
         )
-        return result.scalar_one()
+        total, joined = result.one()
+        return total, joined
