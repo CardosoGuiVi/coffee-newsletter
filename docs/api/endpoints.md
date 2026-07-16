@@ -9,7 +9,7 @@ reading public stats. All routes are served under the `/v1` prefix
 | Context    | Base                                         |
 |------------|----------------------------------------------|
 | Production | `https://coado.club/v1` (proxied to the API) |
-| API host   | `https://api.coado.club/v1`                  |
+| API host   | `https://<fn-id>.lambda-url.sa-east-1.on.aws/v1` (direct Function URL) |
 | Local      | `http://localhost:8000/v1`                   |
 
 Rate limits are applied per client IP (`slowapi`, keyed on the remote address).

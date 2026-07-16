@@ -13,7 +13,7 @@ behind the project. For a high-level overview, start with the
 - [Overview](architecture/overview.md) — the modular monolith, monorepo layout,
   and how the pieces fit together.
 - [Decisions](architecture/decisions.md) — the reasoning behind key choices
-  (why Railway, why no agent frameworks, why a cron over a long-running worker).
+  (why AWS Lambda, why no agent frameworks, why a cron over a long-running worker).
 - [Packages](architecture/packages.md) — responsibility of each package under
   `packages/`.
 
@@ -26,7 +26,7 @@ behind the project. For a high-level overview, start with the
   unsubscribe, stats, health).
 
 ### Infrastructure
-- [Deployment](infrastructure/deployment.md) — Railway, Vercel, and GitHub Actions.
+- [Deployment](infrastructure/deployment.md) — AWS Lambda, Vercel, and GitHub Actions.
 - [Pipeline](infrastructure/pipeline.md) — how the weekly newsletter is built and sent.
 
 ## Project at a glance
@@ -34,7 +34,7 @@ behind the project. For a high-level overview, start with the
 Coado has two runtime surfaces:
 
 1. A **signup site + API** — a static frontend (hosted on Vercel) talking to a
-   FastAPI service (hosted on Railway) that manages subscriptions and exposes
+   FastAPI service (hosted on AWS Lambda) that manages subscriptions and exposes
    public stats.
 2. An **automated pipeline** — a scheduled GitHub Actions job that scrapes RSS
    feeds, summarizes articles with the Claude API, renders an email, and sends

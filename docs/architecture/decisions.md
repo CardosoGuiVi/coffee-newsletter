@@ -26,24 +26,24 @@ deliberate future step, not an oversight.
 
 ## Frontend and API on separate hosts
 
-**Decision:** The static frontend is hosted on Vercel; the API runs on Railway.
-They are wired together with a Vercel rewrite proxy.
+**Decision:** The static frontend is hosted on Vercel; the API runs on AWS Lambda
+(Function URL). They are wired together with a Vercel rewrite proxy.
 
 The browser only ever talks to the Vercel domain (`coado.club`). Requests to
-`/v1/*` are rewritten by Vercel to the Railway API host (`api.coado.club`) behind
-the scenes:
+`/v1/*` are rewritten by Vercel to the Lambda Function URL behind the scenes:
 
 ```json
 {
   "rewrites": [
-    { "source": "/v1/(.*)", "destination": "https://api.coado.club/v1/$1" }
+    { "source": "/v1/(.*)", "destination": "https://<fn-id>.lambda-url.sa-east-1.on.aws/v1/$1" }
   ]
 }
 ```
 
-Because Vercel forwards the original `Host` header, `api.coado.club` must be
-listed in the API's `ALLOWED_HOSTS` (`TrustedHostMiddleware`) or requests are
-rejected with `400`.
+The Function URL host must be listed in the API's `ALLOWED_HOSTS`
+(`TrustedHostMiddleware`) or requests are rejected with `400`; `template.yaml`
+sets it alongside `coado.club`. A custom `api.coado.club` via API Gateway is a
+planned step — today the rewrite targets the raw Function URL.
 
 **Why:** This keeps everything under one origin from the browser's perspective,
 so normal frontend traffic never triggers a cross-origin request or a preflight.
@@ -60,7 +60,7 @@ frontend moved to Vercel.
 ## Scheduled cron, not a long-running worker
 
 **Decision:** The newsletter pipeline runs as a scheduled GitHub Actions job
-(Mondays at 11:00 UTC), not as a persistent service.
+(Mondays at 07:17 UTC), not as a persistent service.
 
 **Why:** The workload is intermittent — it runs once a week for a few minutes.
 A long-running worker would sit idle 99.9% of the time while still consuming
@@ -71,19 +71,21 @@ code, and requires no extra infrastructure.
 availability/scheduling precision (cron can drift by a few minutes). Neither
 matters for a weekly email.
 
-## Single API replica on Railway
+## In-process rate limiting and horizontal scale
 
-**Decision:** The API runs with a single replica on Railway.
+**Decision:** Rate limiting uses `slowapi` with in-process counters, accepting
+that the deployment behaves as effectively one instance.
 
 **Why:** The traffic profile is a low-volume signup form plus occasional stats
-reads. One replica handles this comfortably, and avoiding horizontal scaling
-keeps things simple and cheap.
+reads. In-memory counters avoid an extra dependency (Redis) and are plenty for
+this volume.
 
-**Trade-off:** This constrains in-memory state. Notably, `slowapi` rate limiting
-stores counters in process memory, which only works correctly with a single
-replica. Scaling beyond one would require a shared backend (Redis). This is a
-known boundary, documented so the limitation is intentional rather than a
-surprise.
+**Trade-off:** In-process counters assume a single instance. On Railway this held
+via one replica; on AWS Lambda each concurrent execution environment keeps its
+own counters, so under concurrency the effective limit is per-instance
+(best-effort) rather than global. At current volume Lambda usually serves from a
+single warm instance, but strict global limits would need a shared backend
+(Redis / DynamoDB). This is a known boundary, documented intentionally.
 
 ## Pydantic Settings for configuration
 
@@ -105,7 +107,8 @@ This keeps a single source of truth at the cost of every variable carrying the
 ## Cost-conscious defaults
 
 A recurring principle across decisions: prefer the pragmatic option until real
-data justifies more complexity. Examples include using `claude-haiku` for
-summarization (cheaper, sufficient for the task), not setting Railway resource
-maximums before observing actual usage, and deferring features like JWT-based
-unsubscribe tokens until they are actually needed.
+data justifies more complexity. Examples include using `claude-haiku-4-5` for
+summarization (cheaper, sufficient for the task), keeping the Lambda modestly
+sized (256 MB) rather than over-provisioning before observing actual usage, and
+deferring features like JWT-based unsubscribe tokens until they are actually
+needed.
