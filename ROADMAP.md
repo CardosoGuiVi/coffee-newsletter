@@ -49,8 +49,7 @@ done, in progress, and planned.
 - API migrated to AWS Lambda (`sa-east-1`) via AWS SAM (`template.yaml`), Mangum
   adapter, exposed through a Lambda Function URL
 - `vercel.json` rewrite now points at the Function URL
-- Remaining cleanup: `deploy.yaml` / `railway.toml` still reference Railway (to be
-  removed once the SAM deploy step replaces the Railway deploy)
+- Removed the leftover Railway deploy workflow (`deploy.yaml`) and `railway.toml`
 
 ## 🎯 Planned
 

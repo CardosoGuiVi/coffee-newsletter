@@ -38,7 +38,7 @@ coffee-newsletter/
 ├── pyproject.toml            ← Dependencies (uv)
 ├── Makefile                  ← Useful commands
 ├── compose.yaml              ← Docker (PostgreSQL)
-├── railway.toml              ← Deploy configuration
+├── template.yaml             ← AWS SAM infra (Lambda)
 └── alembic.ini               ← Alembic config
 ```
 

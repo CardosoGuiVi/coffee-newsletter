@@ -39,10 +39,9 @@ make deploy   # make_sam_params.sh → build-function → sam build && sam deplo
 **not** part of the deploy — run them separately against Neon with
 `make db-migrate` (`alembic upgrade head`) when a release includes schema changes.
 
-> **Note:** deploys are currently run manually via `make deploy`. The
-> `.github/workflows/deploy.yaml` workflow still deploys the *old* Railway service
-> (`railway up`) on merge to `main`; it is a leftover from the migration and will
-> be replaced by a SAM deploy step (or removed).
+> **Note:** deploys are run manually via `make deploy` from a local checkout —
+> there is no automated GitHub Actions deploy yet. Wiring up a SAM deploy step
+> (with AWS credentials in Actions secrets) is a planned follow-up.
 
 Required environment variables are listed in [environment.md](../development/environment.md).
 

@@ -119,8 +119,7 @@ Public subscriber statistics. Rate limit: **30/minute**.
 
 ## `GET /v1/health`
 
-Liveness check used by Railway's `healthcheckPath` (`railway.toml`). No rate
-limit.
+Liveness endpoint for uptime and monitoring checks. No rate limit.
 
 **Response — `200 OK`**
 
