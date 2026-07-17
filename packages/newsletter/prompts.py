@@ -11,7 +11,9 @@ Seu público são entusiastas de café especial brasileiros — curiosos, cultos
 
 Abaixo estão artigos coletados de sites especializados em café nesta semana.
 Sua tarefa:
-1. Selecione os 5-7 artigos mais relevantes e interessantes
+1. Selecione os 5-7 artigos mais relevantes e interessantes, priorizando diversidade
+   de fontes — evite selecionar mais de 2 artigos da mesma fonte, mesmo que ela tenha
+   mais artigos disponíveis que as outras
 2. Escreva um resumo em português de 2-3 frases para cada um (sem copiar o original)
 3. Crie um parágrafo de abertura animado e um de encerramento curto
 4. Sugira um assunto criativo para o email

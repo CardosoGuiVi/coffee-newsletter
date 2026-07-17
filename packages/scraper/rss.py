@@ -7,6 +7,7 @@ from packages.newsletter.schemas import Article
 from packages.scraper.sources import RSS_FEEDS
 
 DAYS_BACK: int = 7
+MAX_PER_SOURCE: int = 8
 
 
 def is_recent(entry) -> bool:
@@ -34,7 +35,10 @@ def parse_feed(source_name: str, feed_url: str) -> list[Article]:
                     published_at=entry.get("published", ""),
                 )
             )
-        return articles
+        # Safety ceiling, not a quality filter — keeps a single unusually
+        # prolific feed from flooding the pool sent to Claude. Real
+        # source-diversity selection happens in the prompt.
+        return articles[:MAX_PER_SOURCE]
     except Exception as e:
         print(f"⚠️  Erro ao buscar {source_name}: {e}")
         return []
