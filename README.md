@@ -101,7 +101,7 @@ frontend at the local API.
 |-----------|----------------|--------------------------------------|
 | API       | AWS Lambda (sa-east-1) | SAM — `make deploy`          |
 | Frontend  | Vercel         | `main` → production, others → preview |
-| Pipeline  | GitHub Actions | Cron — Mondays 07:17 UTC (04:17 BRT) |
+| Pipeline  | AWS Lambda (sa-east-1) | EventBridge Scheduler — Mondays 11:00 UTC (08:00 BRT) |
 
 The frontend reaches the API through a Vercel rewrite proxy (`/v1/*` → Lambda Function URL),
 so the browser stays on one origin and there is no CORS to manage. Details in

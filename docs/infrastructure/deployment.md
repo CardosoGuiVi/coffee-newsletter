@@ -6,7 +6,7 @@ Coado is deployed across three platforms, each handling what it does best:
 |-----------|-----------------|------------------------------------------|
 | API       | AWS Lambda (`sa-east-1`) | SAM — `make deploy`             |
 | Frontend  | Vercel          | `main` → production, other branches → preview |
-| Pipeline  | GitHub Actions  | Scheduled cron (Mondays 07:17 UTC)       |
+| Pipeline  | AWS Lambda (`sa-east-1`) | EventBridge Scheduler (Mondays 11:00 UTC) |
 
 ## API — AWS Lambda
 
@@ -93,12 +93,19 @@ route list.
 > API (there is a single API environment). Be mindful when testing the signup
 > form from a preview URL, since it writes to the real database.
 
-## Pipeline — GitHub Actions
+## Pipeline — AWS Lambda + EventBridge Scheduler
 
-The newsletter pipeline is a scheduled workflow, not a long-running service. It
-runs every Monday at 07:17 UTC, executing `apps/newsletter_pipeline`. Provider
-credentials come from repository Actions secrets. See
-[pipeline.md](pipeline.md) for the run flow.
+The newsletter pipeline runs as its own Lambda function (`coado-newsletter`),
+sharing the same SAM template, dependency layer, and config as the API
+function — only the handler differs (`apps.newsletter_pipeline.main.handler`).
+It is not fronted by a Function URL; the only trigger is an EventBridge
+Scheduler event source defined on the function in `template.yaml`, firing every
+Monday at 11:00 UTC. Because it runs for minutes rather than milliseconds, its
+`Timeout` (900s) and `MemorySize` (1024 MB) are overridden above the `Globals`
+defaults used by the API function.
+
+See [pipeline.md](pipeline.md) for the run flow, retry behavior, and how to
+invoke it manually for verification.
 
 ## CI
 
