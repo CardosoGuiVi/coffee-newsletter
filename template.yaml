@@ -35,8 +35,8 @@ Globals:
         COFFEE_RESEND_API_KEY: !Ref ResendApiKey
         # App
         COFFEE_ENVIRONMENT: "production"
-        COFFEE_BASE_URL: "https://coado.club"
-        COFFEE_API_URL: "https://coado.club/v1"
+        COFFEE_BASE_URL: "https://www.coado.club"
+        COFFEE_API_URL: "https://www.coado.club"
         COFFEE_SECRET_KEY: !Ref SecretKey
         COFFEE_ALLOWED_HOSTS: '["coado.club", "www.coado.club", "coffee-newsletter-self.vercel.app", "rwkpejfc3ynbif3u6dhsdhg2we0vpapa.lambda-url.sa-east-1.on.aws"]'
         COFFEE_CORS_ORIGINS: '["https://coado.club", "https://*.vercel.app"]'
@@ -75,6 +75,31 @@ Resources:
             - POST
           AllowHeaders:
             - Content-Type
+
+  CoadoNewsletterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: coado-newsletter
+      CodeUri: .build/function/
+      Handler: apps.newsletter_pipeline.main.handler
+      Timeout: 900
+      MemorySize: 1024
+      Layers:
+        - !Ref CoadoDependenciesLayer
+      LoggingConfig:
+        LogFormat: JSON
+        ApplicationLogLevel: INFO
+        SystemLogLevel: INFO
+      Events:
+        WeeklySchedule:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: "cron(0 11 ? * MON *)"
+            ScheduleExpressionTimezone: "UTC"
+            FlexibleTimeWindow:
+              Mode: "OFF"
+            RetryPolicy:
+              MaximumRetryAttempts: 0
 
 Outputs:
   CoadoApiFunctionUrl:

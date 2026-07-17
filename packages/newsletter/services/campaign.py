@@ -23,7 +23,11 @@ class CampaignService:
         self.subscriber_repository = subscriber_repository
         self.mailer = mailer
 
-    async def send_newsletter(self):
+    async def send_newsletter(
+        self,
+        dry_run: bool = False,
+        test_email: str | None = None,
+    ) -> None:
         articles = await scrape_articles()
         if not articles:
             raise RuntimeError("No articles found — scraper returned empty.")
@@ -32,17 +36,32 @@ class CampaignService:
 
         html = render_newsletter(newsletter)
 
-        subscribers = await self.subscriber_repository.list_active_subscribers()
+        if test_email:
+            recipients = [test_email]
+        else:
+            subscribers = await self.subscriber_repository.list_active_subscribers()
+            if not subscribers:
+                raise RuntimeError("No active subscribers found.")
+            recipients = [subscriber.email for subscriber in subscribers]
 
-        if not subscribers:
-            raise RuntimeError("No active subscribers found.")
+        logger.info(
+            "Newsletter ready: subject=%r recipients=%d dry_run=%s",
+            newsletter.subject,
+            len(recipients),
+            dry_run,
+        )
 
-        for subscriber in subscribers:
-            token = generate_unsubscribe_token(subscriber.email)
-            unsubscribe_url = f"{DOMAIN}/v1/unsubscribe/one-click?email={subscriber.email}&token={token}"
+        if dry_run:
+            return
+
+        for email in recipients:
+            token = generate_unsubscribe_token(email)
+            unsubscribe_url = (
+                f"{DOMAIN}/v1/unsubscribe/one-click?email={email}&token={token}"
+            )
             response = await self.mailer.send_email(
                 subject=newsletter.subject,
-                email=subscriber.email,
+                email=email,
                 html=html,
                 unsubscribe_url=unsubscribe_url,
             )

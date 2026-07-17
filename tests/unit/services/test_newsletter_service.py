@@ -155,3 +155,54 @@ class TestSendNewsletter:
         """No active subscribers raises RuntimeError so the workflow exits non-zero."""
         with pytest.raises(RuntimeError, match="No active subscribers"):
             await make_campaign_service(db_session, fake_mailer).send_newsletter()
+
+
+class TestSendNewsletterVerificationModes:
+    """dry_run and test_email exist to verify a Lambda deploy without emailing
+    every subscriber (invoked manually via `aws lambda invoke`)."""
+
+    async def test_dry_run_sends_nothing(
+        self,
+        db_session: AsyncSession,
+        fake_mailer: FakeMailer,
+        patched_pipeline,
+    ) -> None:
+        db_session.add(Subscriber(email="sub1@example.com", subscribed=True))
+        await db_session.flush()
+
+        await make_campaign_service(db_session, fake_mailer).send_newsletter(
+            dry_run=True
+        )
+
+        assert fake_mailer.sent_emails == []
+
+    async def test_test_email_sends_only_to_that_address(
+        self,
+        db_session: AsyncSession,
+        fake_mailer: FakeMailer,
+        patched_pipeline,
+    ) -> None:
+        # Real subscribers exist but must be ignored when test_email is set.
+        db_session.add(Subscriber(email="real@example.com", subscribed=True))
+        await db_session.flush()
+
+        await make_campaign_service(db_session, fake_mailer).send_newsletter(
+            test_email="verify@example.com"
+        )
+
+        assert len(fake_mailer.sent_emails) == 1
+        assert fake_mailer.sent_emails[0]["email"] == "verify@example.com"
+
+    async def test_test_email_bypasses_no_active_subscribers_check(
+        self,
+        db_session: AsyncSession,
+        fake_mailer: FakeMailer,
+        patched_pipeline,
+    ) -> None:
+        """test_email must work even with zero subscribers in the database —
+        that is the whole point of verifying a fresh deploy."""
+        await make_campaign_service(db_session, fake_mailer).send_newsletter(
+            test_email="verify@example.com"
+        )
+
+        assert len(fake_mailer.sent_emails) == 1
