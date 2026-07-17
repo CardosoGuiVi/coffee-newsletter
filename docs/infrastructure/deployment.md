@@ -93,6 +93,14 @@ route list.
 > API (there is a single API environment). Be mindful when testing the signup
 > form from a preview URL, since it writes to the real database.
 
+### Contact email forwarding
+
+`privacy.html` and `terms.html` list `contato@coado.club` as the contact
+address for data-rights and legal requests. There is no mailbox hosting for
+`coado.club` — for now, **ImprovMX** forwards mail sent to `contato@coado.club`
+to the owner's personal email via MX/TXT records on the domain. This is a
+temporary stand-in until (if ever) a proper mailbox is provisioned.
+
 ## Pipeline — AWS Lambda + EventBridge Scheduler
 
 The newsletter pipeline runs as its own Lambda function (`coado-newsletter`),
