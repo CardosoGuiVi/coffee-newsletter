@@ -12,7 +12,7 @@ def format_articles(articles: list[Article]) -> str:
             f"Título: {a.title}\n"
             f"URL: {a.url}\n"
             f"Resumo: {a.summary or 'N/A'}"
-            for i, a in enumerate(articles[:50])
+            for i, a in enumerate(articles)
         ]
     )
 
