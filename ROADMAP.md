@@ -71,6 +71,30 @@ done, in progress, and planned.
 - Open/click statistics
 - Subject-line experiments
 - Basic subscriber analytics
+- **Newsletter review interface** *(mobile-first)*
+  - On Sunday, the pipeline generates the newsletter draft and saves it to S3;
+    an email/notification is sent with a preview link pointing to a protected
+    page at `admin.coado.club` (`apps/admin/`, vanilla HTML, same stack as
+    `apps/web/`)
+  - The editor can Approve, Edit, or Discard the draft before Monday
+  - If no action is taken by Monday 07:30 UTC, the draft is automatically
+    dispatched as-is
+  - Requires: two EventBridge rules (Sunday generate, Monday fallback
+    dispatch), S3 draft storage, simple token-based auth for the admin page
+- **Enriched newsletter sections**
+  - "Para aprender": 1-2 YouTube videos per edition, scraped via YouTube RSS
+    feeds (`youtube.com/feeds/videos.xml?channel_id=...`) for curated
+    Brazilian and international coffee channels; no manual curation required
+  - "Descoberta da semana": a manually submitted highlight (Instagram post,
+    article, or any URL), submitted via the admin interface; falls back to
+    empty if nothing submitted before dispatch
+  - Source diversity enforcement: max 2 items per domain per edition,
+    enforced in the scraper before the summarization step
+- **Automated Instagram content generation**
+  - After each newsletter send, feed the edition content to Claude and
+    generate 3-5 Instagram caption drafts and image prompts
+  - Output delivered via email or saved to S3 for manual review before
+    posting
 
 ### Infrastructure migration
 Remaining ordered steps — each is independent and does not require the next to be
