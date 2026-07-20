@@ -132,6 +132,18 @@ EventBridge are done; see ✅ Done above.)
   recipient (not everyone, as an EventBridge retry would today); FIFO with a
   per-campaign `MessageDeduplicationId` removes even that if it matters
 
+**Step 4 — Automated CI/CD deploy via GitHub Actions** *(low effort)*
+- On merge to `main`, a GitHub Actions workflow runs `sam build` and
+  `sam deploy` automatically, replacing the current manual `make deploy`
+- AWS credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`) stored
+  as GitHub secrets; SAM parameters passed via `--parameter-overrides`
+  from GitHub secrets (same values as the local `make_sam_params.sh` script)
+- `build-layer` step only runs when `pyproject.toml` or
+  `requirements-api.txt` changes (cache otherwise)
+- CI (tests, lint) must pass before deploy runs
+- The existing `scripts/make_sam_params.sh` is the reference for
+  which secrets are needed
+
 ### Long term
 - Subscriber segments
 - Multi-language support
